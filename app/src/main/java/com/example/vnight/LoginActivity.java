@@ -2,11 +2,11 @@ package com.example.vnight;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,21 +25,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button buttonAddItem;
     Button buttonListItem;
     Button buttonLogIn;
     EditText editTextUsername, editTextPassword;
     ProgressDialog loading;
+
+    SharedPreferences sp;
+    SharedPreferences.Editor sp_editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.login_acivity);
 
         buttonAddItem = (Button)findViewById(R.id.btn_register);
         buttonAddItem.setOnClickListener(this);
@@ -52,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         editTextUsername = (EditText)findViewById(R.id.username);
         editTextPassword = (EditText)findViewById(R.id.password);
+
+        sp = getSharedPreferences("login",MODE_PRIVATE);
+        sp_editor = sp.edit();
 
     }
 
@@ -87,10 +93,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Boolean logged = false;
+                        String firstName = "";
+                        String lastName = "";
+                        String batch = "";
+                        String contactNum = "";
                         loading.dismiss();
-                        Toast.makeText(MainActivity.this,response,Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(getApplicationContext(),reservationForm.class);
-                        startActivity(intent);
+
+                        try {
+                            //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
+                            System.out.println(response);
+                            JSONObject jobj = new JSONObject(response);
+                            JSONArray jarray = jobj.getJSONArray("items");
+
+
+                            for (int i = 0; i < jarray.length(); i++) {
+
+                                JSONObject jo = jarray.getJSONObject(i);
+
+                                logged = jo.getBoolean("logged");
+                                firstName = jo.getString("firstName");
+                                lastName = jo.getString("lastName");
+                                batch = jo.getString("batch");
+                                contactNum = jo.getString("contactNum");
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        System.out.println("return: " + firstName + lastName + batch + contactNum);
+
+                        if(logged){
+                            Toast.makeText(LoginActivity.this,"Authentication Successful",Toast.LENGTH_LONG).show();
+                            sp_editor.putString("username", username).apply();
+                            sp_editor.putBoolean("logged",true).apply();
+                            sp_editor.putString("firstName", firstName).apply();
+                            sp_editor.putString("lastName", lastName).apply();
+                            sp_editor.putString("batch", batch).apply();
+                            sp_editor.putString("contactNum",contactNum).apply();
+                            Intent intent = new Intent(getApplicationContext(),UserHomeActivity.class);
+                            startActivity(intent);
+                            LoginActivity.this.finish();
+                        }
+                        else{
+                            Toast.makeText(LoginActivity.this,"Invalid username and password",Toast.LENGTH_LONG).show();
+                        }
+
                         //Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                         //startActivity(intent);
                     }

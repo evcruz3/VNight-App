@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class reservationForm extends AppCompatActivity
+public class ReservationForm extends AppCompatActivity
         implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     Button buttonReserve;
@@ -68,11 +68,11 @@ public class reservationForm extends AppCompatActivity
     public void onClick(View v){
         if(v == buttonReserve){
             if(switchGuest.isChecked()) {
-                Toast.makeText(reservationForm.this, "You chose " + positionSelected + " for your guest", Toast.LENGTH_LONG).show();
+                Toast.makeText(ReservationForm.this, "You chose " + positionSelected + " for your guest", Toast.LENGTH_LONG).show();
                 addItemToSheet(playerName + " (G)");
             }
             else {
-                Toast.makeText(reservationForm.this, "You chose " + positionSelected, Toast.LENGTH_LONG).show();
+                Toast.makeText(ReservationForm.this, "You chose " + positionSelected, Toast.LENGTH_LONG).show();
                 addItemToSheet(playerName);
             }
         }
@@ -101,7 +101,7 @@ public class reservationForm extends AppCompatActivity
                     public void onResponse(String response) {
 
                         loading.dismiss();
-                        Toast.makeText(reservationForm.this,response,Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReservationForm.this,response,Toast.LENGTH_LONG).show();
 
                     }
                 },

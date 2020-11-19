@@ -79,7 +79,7 @@ public class ListItem extends AppCompatActivity {
 
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
-        System.out.println(jsonResponse);
+        //System.out.println(jsonResponse);
 
         try {
             //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
