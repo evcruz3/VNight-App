@@ -125,7 +125,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         System.out.println("return: " + firstName + lastName + batch + contactNum);
 
                         if(logged){
-                            Toast.makeText(LoginActivity.this,"Authentication Successful",Toast.LENGTH_LONG).show();
                             sp_editor.putString("username", username).apply();
                             sp_editor.putBoolean("logged",true).apply();
                             sp_editor.putString("firstName", firstName).apply();

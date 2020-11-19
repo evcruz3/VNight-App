@@ -2,6 +2,7 @@ package com.example.vnight;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,12 +36,17 @@ public class ReservationForm extends AppCompatActivity
     Spinner spinnerPosition;
     String positionSelected;
     Switch switchGuest;
-    String playerName = "Erickson";
+    String playerName;
+    SharedPreferences sp;
+    SharedPreferences.Editor sp_editor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reservation_form);
+
+        sp = getSharedPreferences("login",MODE_PRIVATE);
+        sp_editor = sp.edit();
 
         buttonReserve = (Button)findViewById(R.id.btn_reserve);
         buttonReserve.setOnClickListener(this);
@@ -49,6 +55,8 @@ public class ReservationForm extends AppCompatActivity
         spinnerPosition.setOnItemSelectedListener(this);
 
         switchGuest = (Switch)findViewById(R.id.switch1);
+
+        playerName = sp.getString("firstName", "");
 
         List<String> positions = new ArrayList<String>();
         positions.add("Wing");
@@ -68,11 +76,11 @@ public class ReservationForm extends AppCompatActivity
     public void onClick(View v){
         if(v == buttonReserve){
             if(switchGuest.isChecked()) {
-                Toast.makeText(ReservationForm.this, "You chose " + positionSelected + " for your guest", Toast.LENGTH_LONG).show();
+                //Toast.makeText(ReservationForm.this, "You chose " + positionSelected + " for your guest", Toast.LENGTH_LONG).show();
                 addItemToSheet(playerName + " (G)");
             }
             else {
-                Toast.makeText(ReservationForm.this, "You chose " + positionSelected, Toast.LENGTH_LONG).show();
+                //Toast.makeText(ReservationForm.this, "You chose " + positionSelected, Toast.LENGTH_LONG).show();
                 addItemToSheet(playerName);
             }
         }
@@ -102,13 +110,20 @@ public class ReservationForm extends AppCompatActivity
 
                         loading.dismiss();
                         Toast.makeText(ReservationForm.this,response,Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getApplicationContext(), UserHomeActivity.class);
+                        startActivity(intent);
+                        ReservationForm.this.finish();
 
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        loading.dismiss();
+                        Toast.makeText(ReservationForm.this,"A problem has occurred. Please try again",Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getApplicationContext(), UserHomeActivity.class);
+                        startActivity(intent);
+                        ReservationForm.this.finish();
                     }
                 }
         ) {

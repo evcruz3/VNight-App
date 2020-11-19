@@ -25,7 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ListItem extends AppCompatActivity {
+public class ListReservedPlayers extends AppCompatActivity {
 
 
     ListView listView;
@@ -35,9 +35,9 @@ public class ListItem extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list_item);
+        setContentView(R.layout.list_reserved_players);
 
-        listView = (ListView) findViewById(R.id.lv_items);
+        listView = (ListView) findViewById(R.id.lv_players);
 
         getItems();
 
@@ -48,7 +48,7 @@ public class ListItem extends AppCompatActivity {
 
         loading =  ProgressDialog.show(this,"Loading Players","please wait",false,true);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec?action=getItems",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec?action=getReservedPlayers",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -79,33 +79,25 @@ public class ListItem extends AppCompatActivity {
 
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
-        //System.out.println(jsonResponse);
+        System.out.println(jsonResponse);
 
         try {
             //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
             JSONObject jobj = new JSONObject(jsonResponse);
             JSONArray jarray = jobj.getJSONArray("items");
 
-            
+
             for (int i = 0; i < jarray.length(); i++) {
 
                 JSONObject jo = jarray.getJSONObject(i);
 
                 String firstName = jo.getString("firstName");
-                String lastName = jo.getString("lastName");
-                String batch = jo.getString("batch");
-                String contactNum = jo.getString("contactNum");
-                String username = jo.getString("username");
-                String password = jo.getString("password");
+                String position = jo.getString("position");
 
 
                 HashMap<String, String> item = new HashMap<>();
                 item.put("firstName", firstName);
-                item.put("lastName", lastName);
-                item.put("batch",batch);
-                item.put("contactNum", contactNum);
-                item.put("username", "@"+username);
-                item.put("password",password);
+                item.put("position", position);
 
                 list.add(item);
 
@@ -116,8 +108,8 @@ public class ListItem extends AppCompatActivity {
         }
 
 
-        adapter = new SimpleAdapter(this,list,R.layout.list_item_row,
-                new String[]{"firstName","lastName","username","batch"},new int[]{R.id.firstName,R.id.lastName,R.id.batch,R.id.username});
+        adapter = new SimpleAdapter(this,list,R.layout.list_reserved_players_row,
+                new String[]{"firstName","position"},new int[]{R.id.firstName,R.id.position});
 
 
 

@@ -19,7 +19,7 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
     TextView welcomeText;
     SharedPreferences sp;
     SharedPreferences.Editor sp_editor;
-    Button buttonLogOut;
+    Button buttonLogOut, buttonReserveSlot, buttonSeeReservedPlayers;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,8 +28,12 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
 
         sp = getSharedPreferences("login",MODE_PRIVATE);
         sp_editor = sp.edit();
-        buttonLogOut = (findViewById(R.id.btn_logOut));
+        buttonLogOut = (Button)findViewById(R.id.btn_logOut);
         buttonLogOut.setOnClickListener(this);
+        buttonReserveSlot = (Button)findViewById(R.id.btn_reserveSlot);
+        buttonReserveSlot.setOnClickListener(this);
+        buttonSeeReservedPlayers = (Button)findViewById(R.id.btn_list_reserved);
+        buttonSeeReservedPlayers.setOnClickListener(this);
 
         String username = sp.getString("username", "");
 
@@ -45,6 +49,16 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             UserHomeActivity.this.finish();
+        }
+
+        if(v == buttonReserveSlot){
+            Intent intent = new Intent(getApplicationContext(), ReservationForm.class);
+            startActivity(intent);
+        }
+
+        if(v == buttonSeeReservedPlayers){
+            Intent intent = new Intent(getApplicationContext(), ListReservedPlayers.class);
+            startActivity(intent);
         }
     }
 }

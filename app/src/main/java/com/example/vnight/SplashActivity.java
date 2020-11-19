@@ -9,6 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 public class SplashActivity extends AppCompatActivity {
 
     SharedPreferences sp;
@@ -30,15 +39,44 @@ public class SplashActivity extends AppCompatActivity {
 //        }
 //        else
 //            Text.setText("Logged: False");
+        Text.setText("Initializing...");
 
         if(sp.getBoolean("logged",false)){
-            intent = new Intent(getApplicationContext(),UserHomeActivity.class);
 
+
+            startMainActivity( new Intent(getApplicationContext(),UserHomeActivity.class));
         }
         else {
-            intent = new Intent(getApplicationContext(), LoginActivity.class);
+            {
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec?action=getItems",
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Text.setText("All is set!");
+
+                                startMainActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                            }
+                        },
+
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Text.setText("Network Error. Please check your internet connection");
+                            }
+                        }
+                );
+
+                int socketTimeOut = 50000;
+                RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+                stringRequest.setRetryPolicy(policy);
+
+                RequestQueue queue = Volley.newRequestQueue(this);
+                queue.add(stringRequest);
+            }
+
         }
-        startMainActivity(intent);
+
     }
 
     protected void startMainActivity(final Intent intent){
@@ -48,7 +86,7 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 SplashActivity.this.finish();
             }
-        }, 2000);
+        }, 0);
     }
 
 }
