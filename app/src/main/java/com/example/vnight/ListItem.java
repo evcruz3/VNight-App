@@ -120,6 +120,7 @@ public class ListItem extends AppCompatActivity {
                 new String[]{"firstName","lastName","batch","username"},new int[]{R.id.firstName,R.id.lastName,R.id.batch,R.id.username});
 
 
+
         listView.setAdapter(adapter);
         loading.dismiss();
     }
