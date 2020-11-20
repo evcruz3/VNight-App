@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.utils.DatabaseHandler;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -43,12 +45,14 @@ public class SplashActivity extends AppCompatActivity {
 
         if(sp.getBoolean("logged",false)){
 
-
-            startMainActivity( new Intent(getApplicationContext(),UserHomeActivity.class));
+            if(sp.getString("username","").compareTo("admin") == 0)
+                startMainActivity(new Intent(getApplicationContext(),AdminHomeActivity.class));
+            else
+                startMainActivity( new Intent(getApplicationContext(),UserHomeActivity.class));
         }
         else {
             {
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec?action=getItems",
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=getItems",
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {

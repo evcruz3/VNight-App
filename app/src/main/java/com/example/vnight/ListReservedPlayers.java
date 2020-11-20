@@ -2,6 +2,7 @@ package com.example.vnight;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;

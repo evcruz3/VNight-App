@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.utils.DatabaseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,7 +91,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         loading =  ProgressDialog.show(this,"Loading","please wait",false,true);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, DatabaseHandler.databaseURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -131,8 +133,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             sp_editor.putString("lastName", lastName).apply();
                             sp_editor.putString("batch", batch).apply();
                             sp_editor.putString("contactNum",contactNum).apply();
-                            Intent intent = new Intent(getApplicationContext(),UserHomeActivity.class);
-                            startActivity(intent);
+                            if(username.compareTo("admin") == 0){
+                                Intent intent = new Intent(getApplicationContext(),AdminHomeActivity.class);
+                                startActivity(intent);
+
+                            }
+                            else {
+                                Intent intent = new Intent(getApplicationContext(), UserHomeActivity.class);
+                                startActivity(intent);
+                            }
                             LoginActivity.this.finish();
                         }
                         else{

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.utils.DatabaseHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +33,6 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.add_item);
 
         editTextFirstName = (EditText)findViewById(R.id.firstName);
@@ -51,7 +52,7 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
 
     private void   addItemToSheet() {
 
-        final ProgressDialog loading = ProgressDialog.show(this,"Adding Item","Please wait");
+
         final String firstName = editTextFirstName.getText().toString().trim();
         final String lastName = editTextLastName.getText().toString().trim();
         final String batch = editTextBatch.getText().toString().trim();
@@ -59,54 +60,111 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         final String username = editTextusername.getText().toString().trim();
         final String password = editTextpassword.getText().toString().trim();
 
+        if (firstName.isEmpty()){
+            Toast.makeText(AddItem.this,"First Name field must not be empty",Toast.LENGTH_LONG).show();
+            return;
+        }
+        else if(lastName.isEmpty()){
+            Toast.makeText(AddItem.this,"Last Name field must not be empty",Toast.LENGTH_LONG).show();
+            return;
+        }
+        else if(username.isEmpty()){
+            Toast.makeText(AddItem.this,"username field must not be empty",Toast.LENGTH_LONG).show();
+            return;
+        }
+        else if(password.isEmpty()){
+            Toast.makeText(AddItem.this,"password field must not be empty",Toast.LENGTH_LONG).show();
+            return;
+        }
+        else {
+            Map<String, String> params = new HashMap<>();
 
+            //here we pass params
+            //params.put("action", "addItem");
+            params.put("firstName", firstName);
+            params.put("lastName", lastName);
+            params.put("batch", batch);
+            params.put("contactNum", contactNum);
+            params.put("username", username);
+            params.put("password", password);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec?action=addItem",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+            final String key = username+password;
 
-                        loading.dismiss();
-                        Toast.makeText(AddItem.this,response,Toast.LENGTH_LONG).show();
+//            final ProgressDialog loading = ProgressDialog.show(AddItem.this,"Signing you up","Please wait");
+            DatabaseHandler.addRowEntryToSheet(AddItem.this, DatabaseHandler.PLAYERS_SHEET_NAME, params, key, new DatabaseHandler.onResponseListener() {
+                @Override
+                public void processResponse(String response) {
+                    if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0){
+//                        System.out.println("DEBUG: Just checking if i went here");
+                        Toast.makeText(AddItem.this,"Sign-up successful",Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(intent);
-
+                        AddItem.this.finish();
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
+                    else if(response.compareTo(DatabaseHandler.WriteReturnCodes.DUPLICATE_KEY_DETECTED) == 0){
+                        Toast.makeText(AddItem.this, "username already exists",Toast.LENGTH_LONG).show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
+            });
+//            loading.dismiss();
+//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//            startActivity(intent);
+//            AddItem.this.finish();
+//            final ProgressDialog loading = ProgressDialog.show(this,"Registering...","Please wait");
+//
+//            StringRequest stringRequest = new StringRequest(Request.Method.POST, DatabaseHandler.databaseURL+"?action=addItem",
+//                    new Response.Listener<String>() {
+//                        @Override
+//                        public void onResponse(String response) {
+//
+//                            loading.dismiss();
+//                            System.out.println(response);
+//                            if (response.trim().compareTo("username already exists") == 0)
+//                                Toast.makeText(AddItem.this, response, Toast.LENGTH_LONG).show();
+//                            else {
+//                                Toast.makeText(AddItem.this, response, Toast.LENGTH_LONG).show();
+//                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//                                startActivity(intent);
+//                                AddItem.this.finish();
+//                            }
+//
+//                        }
+//                    },
+//                    new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//
+//                        }
+//                    }
+//            ) {
+//                @Override
+//                protected Map<String, String> getParams() {
+//                    Map<String, String> params = new HashMap<>();
+//
+//                    //here we pass params
+//                    params.put("action", "addItem");
+//                    params.put("firstName", firstName);
+//                    params.put("lastName", lastName);
+//                    params.put("batch", batch);
+//                    params.put("contactNum", contactNum);
+//                    params.put("username", username);
+//                    params.put("password", password);
+//
+//                    return params;
+//                }
+//            };
+//
+//
+//            int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
+//
+//            RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+//            stringRequest.setRetryPolicy(retryPolicy);
+//
+//            RequestQueue queue = Volley.newRequestQueue(this);
+//
+//            queue.add(stringRequest);
 
-                //here we pass params
-                params.put("action","addItem");
-                params.put("firstName",firstName);
-                params.put("lastName",lastName);
-                params.put("batch",batch);
-                params.put("contactNum",contactNum);
-                params.put("username",username);
-                params.put("password",password);
-
-                return params;
-            }
-        };
-
-        int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
-
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(retryPolicy);
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        queue.add(stringRequest);
-
-
+        }
     }
 
 
