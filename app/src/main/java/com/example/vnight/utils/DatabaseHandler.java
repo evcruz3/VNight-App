@@ -15,6 +15,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.vnight.AdminHomeActivity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +28,7 @@ public class DatabaseHandler {
     static public String PLAYERS_SHEET_NAME = "Items";
     static public String EVENTS_SHEET_NAME = "events";
     static public String reservationListSheetName = "reservationList";
+    static public int    socketTimeOut = 50000;
 
 
     static public class WriteReturnCodes{
@@ -34,12 +40,98 @@ public class DatabaseHandler {
         void processResponse(final String response);
     }
 
+    public interface onResponseProcessedListener{
+        void processList(final ArrayList<HashMap<String, String>> list);
+    }
+
+    public interface onDeleteListener{
+        void onDelete(final String response);
+    }
+
+    static public void getItemsFromSheet(final Context ctx, final String sheetName, final String[] keys, final onResponseProcessedListener responseProcessedListener){
+        //final ProgressDialog loading =  ProgressDialog.show(ctx,"Fetching Data","please wait",false,true);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=getItemsFromSheet&sheetName="+sheetName,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+
+                        //System.out.println(jsonResponse);
+                        //loading.dismiss();
+
+                        try {
+                            //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
+                            JSONObject jobj = new JSONObject(response);
+                            JSONArray jarray = jobj.getJSONArray("items");
 
 
-    static public void addRowEntryToSheet(final Context ctx, final String sheetName, final Map<String,String> entries, final String key, final onResponseListener responseListener ){
-        if (key.isEmpty()){
-            throw new RuntimeException("key must not be empty");
-        }
+                            for (int i = 0; i < jarray.length(); i++) {
+
+                                JSONObject jo = jarray.getJSONObject(i);
+                                HashMap<String, String> item = new HashMap<>();
+
+                                for(int j = 0; j<keys.length; j++){
+                                    item.put(keys[j], jo.getString(keys[j]));
+                                }
+
+                                list.add(item);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        responseProcessedListener.processList(list);
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(ctx,"A network problem has occurred. Please try again",Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+
+        RequestQueue queue = Volley.newRequestQueue(ctx);
+        queue.add(stringRequest);
+
+
+
+    }
+
+    static public void deleteRowFromSheetByID(final Context ctx, final String sheetName, final String entryID, final onDeleteListener deleteListener){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=deleteRowFromSheetByID&sheetName="+sheetName+"&entryID="+entryID,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        deleteListener.onDelete(response);
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(ctx,"A network problem has occurred. Please try again",Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+
+        RequestQueue queue = Volley.newRequestQueue(ctx);
+        queue.add(stringRequest);
+    }
+
+    static public void addRowEntryToSheet(final Context ctx, final String sheetName, final Map<String,String> entries, final onResponseListener responseListener ){
+//        if (key.isEmpty()){
+//            throw new RuntimeException("key must not be empty");
+//        }
         final ProgressDialog loading = ProgressDialog.show(ctx,"Adding Entry...","Adding entry to "+sheetName+". Please wait");
         final String action = "addRowToSheet";
 
@@ -67,15 +159,13 @@ public class DatabaseHandler {
                 //here we pass params
 
                 params.put("action","addRowEntryToSheet");
-                params.put("key", key);
+//                params.put("key", key);
                 params.put("sheetName", sheetName);
 
 
                 return params;
             }
         };
-
-        int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
 
         RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(retryPolicy);

@@ -175,8 +175,8 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
                 params.put("reservationOn", reservationOn);
 
 //                final ProgressDialog loading = ProgressDialog.show(AdminHomeActivity.this,"Creating Event","Please wait");
-                final String key = name.replaceAll("\\s+","");
-                DatabaseHandler.addRowEntryToSheet(AdminHomeActivity.this, DatabaseHandler.EVENTS_SHEET_NAME, params, key, new DatabaseHandler.onResponseListener() {
+//                final String key = name.replaceAll("\\s+","");
+                DatabaseHandler.addRowEntryToSheet(AdminHomeActivity.this, DatabaseHandler.EVENTS_SHEET_NAME, params, new DatabaseHandler.onResponseListener() {
                     @Override
                     public void processResponse(String response) {
                         if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0){

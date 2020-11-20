@@ -88,10 +88,10 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
             params.put("username", username);
             params.put("password", password);
 
-            final String key = username+password;
+//            final String key = username+password;
 
 //            final ProgressDialog loading = ProgressDialog.show(AddItem.this,"Signing you up","Please wait");
-            DatabaseHandler.addRowEntryToSheet(AddItem.this, DatabaseHandler.PLAYERS_SHEET_NAME, params, key, new DatabaseHandler.onResponseListener() {
+            DatabaseHandler.addRowEntryToSheet(AddItem.this, DatabaseHandler.PLAYERS_SHEET_NAME, params, new DatabaseHandler.onResponseListener() {
                 @Override
                 public void processResponse(String response) {
                     if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0){
@@ -106,63 +106,6 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
                     }
                 }
             });
-//            loading.dismiss();
-//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//            startActivity(intent);
-//            AddItem.this.finish();
-//            final ProgressDialog loading = ProgressDialog.show(this,"Registering...","Please wait");
-//
-//            StringRequest stringRequest = new StringRequest(Request.Method.POST, DatabaseHandler.databaseURL+"?action=addItem",
-//                    new Response.Listener<String>() {
-//                        @Override
-//                        public void onResponse(String response) {
-//
-//                            loading.dismiss();
-//                            System.out.println(response);
-//                            if (response.trim().compareTo("username already exists") == 0)
-//                                Toast.makeText(AddItem.this, response, Toast.LENGTH_LONG).show();
-//                            else {
-//                                Toast.makeText(AddItem.this, response, Toast.LENGTH_LONG).show();
-//                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//                                startActivity(intent);
-//                                AddItem.this.finish();
-//                            }
-//
-//                        }
-//                    },
-//                    new Response.ErrorListener() {
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//
-//                        }
-//                    }
-//            ) {
-//                @Override
-//                protected Map<String, String> getParams() {
-//                    Map<String, String> params = new HashMap<>();
-//
-//                    //here we pass params
-//                    params.put("action", "addItem");
-//                    params.put("firstName", firstName);
-//                    params.put("lastName", lastName);
-//                    params.put("batch", batch);
-//                    params.put("contactNum", contactNum);
-//                    params.put("username", username);
-//                    params.put("password", password);
-//
-//                    return params;
-//                }
-//            };
-//
-//
-//            int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
-//
-//            RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-//            stringRequest.setRetryPolicy(retryPolicy);
-//
-//            RequestQueue queue = Volley.newRequestQueue(this);
-//
-//            queue.add(stringRequest);
 
         }
     }

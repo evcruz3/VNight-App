@@ -33,6 +33,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.utils.DatabaseHandler;
 
 import org.w3c.dom.Text;
 
@@ -120,12 +121,25 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                Map<String, String> params = new HashMap<>();
+                String name;
                 if(switchGuest.isChecked()){
-                    addItemToSheet(playerName + " (G)", spinnerPosition.getSelectedItem().toString());
+                    name = playerName + " (G)";
                 }
                 else {
-                    addItemToSheet(playerName, spinnerPosition.getSelectedItem().toString());
+                    name = playerName;
                 }
+                params.put("playerName", name);
+                params.put("position", spinnerPosition.getSelectedItem().toString().trim());
+
+                final String reservedName = name;
+                DatabaseHandler.addRowEntryToSheet(UserHomeActivity.this, "reservationList", params, new DatabaseHandler.onResponseListener() {
+                    @Override
+                    public void processResponse(String response) {
+                        Toast.makeText(UserHomeActivity.this, "Reservation for "+reservedName+" successful", Toast.LENGTH_LONG).show();
+                    }
+                });
+
             }
         });
 
