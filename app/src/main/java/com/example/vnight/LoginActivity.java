@@ -100,6 +100,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         String lastName = "";
                         String batch = "";
                         String contactNum = "";
+                        int userID = 0;
                         loading.dismiss();
 
                         try {
@@ -118,6 +119,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 lastName = jo.getString("lastName");
                                 batch = jo.getString("batch");
                                 contactNum = jo.getString("contactNum");
+                                userID = jo.getInt("entryID");
 
                             }
                         } catch (JSONException e) {
@@ -127,6 +129,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         System.out.println("return: " + firstName + lastName + batch + contactNum);
 
                         if(logged){
+
+                            sp_editor.putInt("entryID", userID).apply();
                             sp_editor.putString("username", username).apply();
                             sp_editor.putBoolean("logged",true).apply();
                             sp_editor.putString("firstName", firstName).apply();

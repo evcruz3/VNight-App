@@ -28,7 +28,7 @@ import java.util.Map;
 public class AddItem extends AppCompatActivity implements View.OnClickListener {
 
 
-    EditText editTextFirstName,editTextLastName,editTextBatch,editTextContactNum,editTextusername,editTextpassword;
+    EditText editTextFirstName,editTextLastName,editTextBatch,editTextContactNum,editTextusername,editTextpassword, editTextPasswordRetype;
     Button buttonAddItem;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,6 +41,7 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         editTextContactNum = (EditText)findViewById(R.id.contactNum);
         editTextusername = (EditText)findViewById(R.id.username);
         editTextpassword = (EditText)findViewById(R.id.password);
+        editTextPasswordRetype = (EditText)findViewById(R.id.passwordRetype);
 
         buttonAddItem = (Button)findViewById(R.id.btn_register);
         buttonAddItem.setOnClickListener(this);
@@ -59,6 +60,7 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         final String contactNum = editTextContactNum.getText().toString().trim();
         final String username = editTextusername.getText().toString().trim();
         final String password = editTextpassword.getText().toString().trim();
+        final String passwordRetype = editTextPasswordRetype.getText().toString().trim();
 
         if (firstName.isEmpty()){
             Toast.makeText(AddItem.this,"First Name field must not be empty",Toast.LENGTH_LONG).show();
@@ -74,6 +76,9 @@ public class AddItem extends AppCompatActivity implements View.OnClickListener {
         }
         else if(password.isEmpty()){
             Toast.makeText(AddItem.this,"password field must not be empty",Toast.LENGTH_LONG).show();
+            return;
+        } else if(password.compareTo(passwordRetype) != 0){
+            Toast.makeText(AddItem.this,"Passwords do not match. Please check your password",Toast.LENGTH_LONG).show();
             return;
         }
         else {

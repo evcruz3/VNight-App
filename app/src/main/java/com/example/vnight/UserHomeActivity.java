@@ -1,20 +1,15 @@
 package com.example.vnight;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -35,9 +30,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.vnight.utils.DatabaseHandler;
 
-import org.w3c.dom.Text;
-
-import java.lang.invoke.ConstantCallSite;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +40,7 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
     TextView welcomeText;
     SharedPreferences sp;
     SharedPreferences.Editor sp_editor;
-    Button buttonLogOut, buttonReserveSlot, buttonSeeReservedPlayers;
+    Button buttonLogOut, buttonViewEvents, buttonSeeReservedPlayers;
     String playerName;
 
     @Override
@@ -60,8 +52,8 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         sp_editor = sp.edit();
         buttonLogOut = (Button)findViewById(R.id.btn_logOut);
         buttonLogOut.setOnClickListener(this);
-        buttonReserveSlot = (Button)findViewById(R.id.btn_reserveSlot);
-        buttonReserveSlot.setOnClickListener(this);
+        buttonViewEvents = (Button)findViewById(R.id.btn_viewEvents);
+        buttonViewEvents.setOnClickListener(this);
         buttonSeeReservedPlayers = (Button)findViewById(R.id.btn_list_reserved);
         buttonSeeReservedPlayers.setOnClickListener(this);
 
@@ -82,10 +74,11 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
             UserHomeActivity.this.finish();
         }
 
-        if(v == buttonReserveSlot){
+        if(v == buttonViewEvents){
 //            Intent intent = new Intent(getApplicationContext(), ReservationForm.class);
 //            startActivity(intent);
-            openDialogBox();
+            //openDialogBox();
+            viewEvents();
         }
 
         if(v == buttonSeeReservedPlayers){
@@ -94,66 +87,27 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void openDialogBox(){
-        LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
-        final View view = layoutInflater.inflate(R.layout.reservation_form_dialog,null);
-        final AlertDialog alertDialog = new AlertDialog.Builder(UserHomeActivity.this).create();
-        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        alertDialog.setCancelable(true);
-        alertDialog.setMessage("Please select a position");
-
-        final LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.reserveDialog);
-        final Spinner spinnerPosition = (Spinner)view.findViewById(R.id.dialog_spinnerPosition);
-        final Switch switchGuest = (Switch)view.findViewById(R.id.dialog_switch1);
-
-        List<String> positions = new ArrayList<String>();
-        positions.add("Wing");
-        positions.add("Mid");
-        positions.add("Setter");
-        positions.add("Libero");
-
-        final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, positions);
-
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinnerPosition.setAdapter(dataAdapter);
-
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+    private void viewEvents(){
+        final ProgressDialog loading = ProgressDialog.show(this,"Loading Events..","Please wait");
+        String[] keys = {"entryID", "key", "eventName", "eventDate", "eventTimeStart", "eventTimeEnd", "eventLocation","reservationOn","participants"};
+        DatabaseHandler.getItemsFromSheet(UserHomeActivity.this, "events", keys, new DatabaseHandler.onResponseProcessedListener (){
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Map<String, String> params = new HashMap<>();
-                String name;
-                if(switchGuest.isChecked()){
-                    name = playerName + " (G)";
+            public void processList(final ArrayList<HashMap<String, String>> list){
+                loading.dismiss();
+                if(list.isEmpty()){
+                    Toast.makeText(UserHomeActivity.this, "No items can be shown", Toast.LENGTH_LONG).show();
                 }
-                else {
-                    name = playerName;
+                else{
+                    Intent intent = new Intent(getApplicationContext(), EventsListActivity.class);
+                    intent.putExtra("eventsList", list);
+                    startActivity(intent);
+                    //AdminHomeActivity.this.finish();
                 }
-                params.put("playerName", name);
-                params.put("position", spinnerPosition.getSelectedItem().toString().trim());
-
-                final String reservedName = name;
-                DatabaseHandler.addRowEntryToSheet(UserHomeActivity.this, "reservationList", params, new DatabaseHandler.onResponseListener() {
-                    @Override
-                    public void processResponse(String response) {
-                        Toast.makeText(UserHomeActivity.this, "Reservation for "+reservedName+" successful", Toast.LENGTH_LONG).show();
-                    }
-                });
-
             }
         });
-
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                alertDialog.dismiss();
-            }
-        });
-
-        alertDialog.setView(view);
-        alertDialog.show();
-
     }
+
+
 
     private void   addItemToSheet(final String name, final String positionSelected) {
 

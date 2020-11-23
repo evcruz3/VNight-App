@@ -16,7 +16,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.vnight.utils.DatabaseHandler;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,6 +47,7 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
 
     Button buttonCreateNewEvent;
     Button buttonLogOut;
+    Button buttonViewEvents;
     SharedPreferences sp;
     SharedPreferences.Editor sp_editor;
 
@@ -58,6 +62,8 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
         sp_editor = sp.edit();
         buttonLogOut = (Button)findViewById(R.id.btn_LogOutAdmin);
         buttonLogOut.setOnClickListener(this);
+        buttonViewEvents = (Button)findViewById(R.id.btn_viewEvents);
+        buttonViewEvents.setOnClickListener(this);
     }
 
     @Override
@@ -72,6 +78,29 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
             startActivity(intent);
             AdminHomeActivity.this.finish();
         }
+        if(v == buttonViewEvents){
+            viewEvents();
+        }
+    }
+
+    private void viewEvents(){
+        final ProgressDialog loading = ProgressDialog.show(this,"Loading Events..","Please wait");
+        String[] keys = {"entryID", "eventName", "eventDate", "eventTimeStart", "eventTimeEnd", "eventLocation","reservationOn","participants"};
+        DatabaseHandler.getItemsFromSheet(AdminHomeActivity.this, "events", keys, new DatabaseHandler.onResponseProcessedListener (){
+            @Override
+            public void processList(final ArrayList<HashMap<String, String>> list){
+                loading.dismiss();
+                if(list.isEmpty()){
+                    Toast.makeText(AdminHomeActivity.this, "No items can be shown", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Intent intent = new Intent(getApplicationContext(), EventsListActivity.class);
+                    intent.putExtra("eventsList", list);
+                    startActivity(intent);
+                    //AdminHomeActivity.this.finish();
+                }
+            }
+        });
     }
 
     private void openDialogBox(){
@@ -125,7 +154,8 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
                 TimePickerDialog timePickerDialog = new TimePickerDialog(AdminHomeActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                        eventTimeStart.setText(hourOfDay + ":" + minute);
+                        String tmp = minute == 0 ? "00": Integer.toString(minute);
+                        eventTimeStart.setText(hourOfDay + ":" + tmp);
                     }
                 }, mHour, mMinute, false);
                 timePickerDialog.show();
@@ -142,7 +172,8 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
                 TimePickerDialog timePickerDialog = new TimePickerDialog(AdminHomeActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                        eventTimeEnd.setText(hourOfDay + ":" + minute);
+                        String tmp = minute == 0 ? "00": Integer.toString(minute);
+                        eventTimeEnd.setText(hourOfDay + ":" + tmp);
                     }
                 }, mHour, mMinute, false);
                 timePickerDialog.show();
@@ -163,31 +194,49 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
                 final String players = eventPlayers.getText().toString().trim();
                 final String reservationOn = allowReservation.isChecked() ? "TRUE":"FALSE";
 
-                Map <String, String> params = new HashMap<>();
 
-                //params.put("action","createNewEvent");
-                params.put("eventName",name);
-                params.put("eventDate",date);
-                params.put("eventTimeStart",timeStart);
-                params.put("eventTimeEnd", timeEnd);
-                params.put("eventLocation",location);
-                params.put("participants", players);
-                params.put("reservationOn", reservationOn);
+                if (name.isEmpty()){
+                    Toast.makeText(AdminHomeActivity.this,"Event Name cannot be empty",Toast.LENGTH_LONG).show();
+                }
+                else if (date.isEmpty()){
+                    Toast.makeText(AdminHomeActivity.this,"Event Date cannot be empty",Toast.LENGTH_LONG).show();
+                }
+                else if  (timeStart.isEmpty() || timeEnd.isEmpty()){
+                    Toast.makeText(AdminHomeActivity.this,"Please specify the time of the event",Toast.LENGTH_LONG).show();
+                }
+                else if (players.isEmpty()){
+                    Toast.makeText(AdminHomeActivity.this,"Please specify number of players",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Map<String, String> params = new HashMap<>();
+
+                    //params.put("action","createNewEvent");
+                    params.put("eventName", name);
+                    params.put("eventDate", date);
+                    params.put("eventTimeStart", timeStart);
+                    params.put("eventTimeEnd", timeEnd);
+                    params.put("eventLocation", location);
+                    params.put("participants", players);
+                    params.put("reservationOn", reservationOn);
 
 //                final ProgressDialog loading = ProgressDialog.show(AdminHomeActivity.this,"Creating Event","Please wait");
 //                final String key = name.replaceAll("\\s+","");
-                DatabaseHandler.addRowEntryToSheet(AdminHomeActivity.this, DatabaseHandler.EVENTS_SHEET_NAME, params, new DatabaseHandler.onResponseListener() {
-                    @Override
-                    public void processResponse(String response) {
-                        if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0){
-                            Toast.makeText(AdminHomeActivity.this,"New event has been created",Toast.LENGTH_LONG).show();
-                        }
-                        else if(response.compareTo(DatabaseHandler.WriteReturnCodes.DUPLICATE_KEY_DETECTED) == 0){
-                            Toast.makeText(AdminHomeActivity.this, "Event '"+name+"' already exists",Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+//                    DatabaseHandler.doActionToSheet(AdminHomeActivity.this, "events", "createNewEvent", params, );
 
+                    DatabaseHandler.doActionToSheet(AdminHomeActivity.this, DatabaseHandler.EVENTS_SHEET_NAME, "createNewEvent", params, new DatabaseHandler.onResponseListener() {
+                        @Override
+                        public void processResponse(String response) {
+                            if (response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0) {
+                                Toast.makeText(AdminHomeActivity.this, "New event has been created", Toast.LENGTH_LONG).show();
+                            } else if (response.compareTo(DatabaseHandler.WriteReturnCodes.DUPLICATE_KEY_DETECTED) == 0) {
+                                Toast.makeText(AdminHomeActivity.this, "Event '" + name + "' already exists", Toast.LENGTH_LONG).show();
+                            }
+                            else{
+                                Toast.makeText(AdminHomeActivity.this, response, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
 //                loading.dismiss();
                 //addItemToSheet(name, date, location, timeStart, timeEnd, players, reservationOn);
             }

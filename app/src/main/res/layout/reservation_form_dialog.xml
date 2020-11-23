@@ -7,23 +7,27 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
+    <EditText
+        android:id="@+id/et_guestName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="216dp"
+        android:hint="Guest Name (Optional)"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Spinner
         android:id="@+id/dialog_spinnerPosition"
-        android:layout_width="228dp"
+        android:layout_width="252dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:foregroundGravity="center"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/preferredPosition"
         app:layout_constraintTop_toBottomOf="@+id/preferredPosition" />
-
-    <Switch
-        android:id="@+id/dialog_switch1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:text="I am reserving for a guest"
-        app:layout_constraintEnd_toEndOf="@+id/spinnerPosition"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </LinearLayout>
