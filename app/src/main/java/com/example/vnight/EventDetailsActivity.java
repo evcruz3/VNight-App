@@ -198,23 +198,22 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Map<String, String> params = new HashMap<>();
-                String lastName;
-                String firstName;
+                String userID;
 
                 String gName = guestName.getText().toString().trim();
                 if(gName.isEmpty()){
-                    lastName = playerSurname;
-                    firstName = playerName;
+                    userID = ""+userInfo.getEntryID();
+//                    firstName = playerName;
                 }
                 else {
-                    firstName = gName;
-                    lastName = "("+playerName+"'s Guest)";
+                    userID = gName;
+//                    lastName = "("+playerName+"'s Guest)";
                 }
-                params.put("firstName", firstName);
-                params.put("lastName", lastName);
+                params.put("userID", userID);
+                //params.put("lastName", lastName);
                 params.put("position", spinnerPosition.getSelectedItem().toString().trim());
 
-                final String reservedName = firstName;
+                final String reservedName = gName.isEmpty() ? userInfo.getFirstName() : userID;
 
                 DatabaseHandler.addRowEntryToSheet(EventDetailsActivity.this, event.get("key"), params, new DatabaseHandler.onResponseListener() {
                     @Override
@@ -222,7 +221,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                         if(response.compareTo("0") == 0)
                             Toast.makeText(EventDetailsActivity.this, "Reservation for "+reservedName+" successful", Toast.LENGTH_LONG).show();
                         else if (response.compareTo("-1") == 0){
-                            Toast.makeText(EventDetailsActivity.this, "You've already made a reservation for this position", Toast.LENGTH_LONG).show();
+                            Toast.makeText(EventDetailsActivity.this, "You've already made a reservation for" + reservedName, Toast.LENGTH_LONG).show();
                         }
                         else{
                             Toast.makeText(EventDetailsActivity.this, response, Toast.LENGTH_LONG).show();

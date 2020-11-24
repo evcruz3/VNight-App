@@ -93,6 +93,51 @@ public class DatabaseHandler {
         queue.add(stringRequest);
     }
 
+    static public void editRowFromSheetByID(final Context ctx, final String sheetName, final int entryID, final Map<String,String> entries, final onResponseListener responseListener){
+        //final ProgressDialog loading = ProgressDialog.show(ctx,"Editing Entry...","Editing entry of "+sheetName+". Please wait");
+        final String action = "editRowFromSheetByID";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, DatabaseHandler.databaseURL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //loading.dismiss();
+                        responseListener.processResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //loading.dismiss();
+                        Toast.makeText(ctx,"A network problem has occurred. Please try again",Toast.LENGTH_LONG).show();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                params.putAll(entries);
+                params.put("entryID", ""+entryID);
+                //here we pass params
+
+                params.put("action",action);
+//                params.put("key", key);
+                params.put("sheetName", sheetName);
+
+
+                return params;
+            }
+        };
+
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(retryPolicy);
+
+        RequestQueue queue = Volley.newRequestQueue(ctx);
+
+        queue.add(stringRequest);
+    }
+
     static public void getItemsFromSheet(final Context ctx, final String sheetName, final String[] keys, final onResponseProcessedListener responseProcessedListener){
         //final ProgressDialog loading =  ProgressDialog.show(ctx,"Fetching Data","please wait",false,true);
 

@@ -12,7 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.vnight.customClasses.UserInfo;
+import com.example.vnight.utils.DatabaseHandler;
 import com.example.vnight.utils.SharedPreferenceHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +41,7 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
     EditText editTextPasswordRetype;
 //    @BindView(R.id.btn_submit)
     Button buttonSubmit;
+    EditText editTextUsername;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,13 +57,15 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
         editTextPassword = (EditText)findViewById(R.id.et_password);
         editTextPasswordRetype = (EditText)findViewById(R.id.et_passwordRetype);
         buttonSubmit = (Button)findViewById(R.id.btn_submit);
+        editTextUsername = (EditText)findViewById(R.id.et_username);
         buttonSubmit.setOnClickListener(this);
 
 
         editTextFirstName.setText(userInfo.getFirstName());
         editTextLastName.setText(userInfo.getLastName());
         editTextBatch.setText("" +userInfo.getBatch());
-        editTextContactNumber.setText("+63 "+userInfo.getContactNum());
+        editTextContactNumber.setText(userInfo.getContactNum());
+        editTextUsername.setText(userInfo.getUsername());
 
 
     }
@@ -72,8 +79,13 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
             final String contactNum = editTextContactNumber.getText().toString().trim();
             final String password = editTextPassword.getText().toString().trim();
             final String passwordRetype = editTextPasswordRetype.getText().toString().trim();
+            final String username = editTextUsername.getText().toString().trim();
 
-            if (firstName.isEmpty()){
+            if (username.isEmpty()){
+                Toast.makeText(ctx,"username field must not be empty",Toast.LENGTH_LONG).show();
+                return;
+            }
+            else if (firstName.isEmpty()){
                 Toast.makeText(ctx,"First Name field must not be empty",Toast.LENGTH_LONG).show();
                 return;
             }
@@ -95,10 +107,45 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                 userInfo.setBatch(batch);
                 userInfo.setContactNum(contactNum);*/
                 // TODO: insert database server edit here
-                Toast.makeText(EditUserInfoActivity.this, "Update User Info successful", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(EditUserInfoActivity.this, UserHomeActivity.class);
-                startActivity(intent);
-                EditUserInfoActivity.this.finish();
+                Map<String, String> params = new HashMap<>();
+
+                //here we pass params
+                //params.put("action", "addItem");
+                params.put("username", username);
+                params.put("firstName", firstName);
+                params.put("lastName", lastName);
+                params.put("batch", ""+batch);
+                params.put("contactNum", contactNum);
+                params.put("password", password);
+                DatabaseHandler.editRowFromSheetByID(ctx, "Items", userInfo.getEntryID(), params, new DatabaseHandler.onResponseListener() {
+                    @Override
+                    public void processResponse(String response) {
+                        if(response.compareTo("0") == 0){
+                            Toast.makeText(ctx,"Your profile has been updated.", Toast.LENGTH_LONG).show();
+                            userInfo.setUsername(username);
+                            userInfo.setFirstName(firstName);
+                            userInfo.setLastName(lastName);
+                            userInfo.setBatch(batch);
+                            userInfo.setContactNum(contactNum);
+                            SharedPreferenceHandler.saveObjectToSharedPreference(ctx,"UserInfo", "UserInfo", userInfo);
+                            Intent intent = new Intent(EditUserInfoActivity.this, UserHomeActivity.class);
+                            startActivity(intent);
+                            EditUserInfoActivity.this.finish();
+                        }
+                        else if(response.compareTo("-1") == 0){
+                            Toast.makeText(ctx,"Entry not found", Toast.LENGTH_LONG).show();
+                        }
+                        else if(response.compareTo("-2") == 0){
+                            Toast.makeText(ctx,"username already exists", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                            {
+                            Toast.makeText(ctx,response,Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+               // Toast.makeText(EditUserInfoActivity.this, "Update User Info successful", Toast.LENGTH_LONG).show();
+
             }
         }
 
