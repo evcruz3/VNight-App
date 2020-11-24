@@ -2,23 +2,14 @@ package com.example.vnight;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -35,7 +26,6 @@ import com.example.vnight.utils.SharedPreferenceHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class UserHomeActivity extends AppCompatActivity implements View.OnClickListener {
@@ -43,9 +33,9 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
     TextView welcomeText;
 //    SharedPreferences sp;
 //    SharedPreferences.Editor sp_editor;
-    Button buttonLogOut, buttonViewEvents, buttonSeeReservedPlayers;
+    Button buttonLogOut, buttonViewEvents, buttonSeeReservedPlayers, buttonEditProfile;
     String playerName;
-    SharedPreferenceHandler mSharedPreferenceHandler;
+//    SharedPreferenceHandler mSharedPreferenceHandler;
     Context ctx;
     UserInfo userInfo;
 
@@ -55,8 +45,8 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.user_home_activity);
         ctx = this;
 
-        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
-        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo","UserInfo", UserInfo.class);
+//        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = SharedPreferenceHandler.getSavedObjectFromPreference(ctx,"UserInfo","UserInfo", UserInfo.class);
 //        sp = getSharedPreferences("login",MODE_PRIVATE);
 //        sp_editor = sp.edit();
 
@@ -66,6 +56,8 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         buttonViewEvents.setOnClickListener(this);
         buttonSeeReservedPlayers = (Button)findViewById(R.id.btn_list_reserved);
         buttonSeeReservedPlayers.setOnClickListener(this);
+        buttonEditProfile = (Button)findViewById(R.id.btn_editUserInfo);
+        buttonEditProfile.setOnClickListener(this);
 
 //        String username = sp.getString("username", "");
 //        playerName = sp.getString("firstName", "");
@@ -83,7 +75,7 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         if(v == buttonLogOut){
 //            sp_editor.putBoolean("logged", false).apply();
 //            sp_editor.putString("username", "").apply();
-            mSharedPreferenceHandler.removeObjectFromSharedPreference("UserInfo", "UserInfo");
+            SharedPreferenceHandler.removeObjectFromSharedPreference(ctx,"UserInfo", "UserInfo");
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             UserHomeActivity.this.finish();
@@ -98,6 +90,12 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
 
         if(v == buttonSeeReservedPlayers){
             Intent intent = new Intent(getApplicationContext(), ListReservedPlayers.class);
+            startActivity(intent);
+        }
+
+        if(v == buttonEditProfile){
+            // TODO: complete this
+            Intent intent = new Intent(getApplicationContext(), EditUserInfoActivity.class);
             startActivity(intent);
         }
     }

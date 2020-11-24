@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ProgressDialog loading;
     ImageView passwordViewButton;
 
-    SharedPreferenceHandler mSharedPreferenceHandler;
+//    SharedPreferenceHandler mSharedPreferenceHandler;
     UserInfo userInfo;
 
     Context ctx;
@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.login_acivity);
         ctx = this;
 
-        mSharedPreferenceHandler = new SharedPreferenceHandler(this);
+//        mSharedPreferenceHandler = new SharedPreferenceHandler(this);
 
 
 
@@ -172,7 +172,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //                            sp_editor.putString("contactNum",contactNum).apply();
 
                             userInfo = new UserInfo(entryID, firstName, lastName, batch, contactNum, username);
-                            mSharedPreferenceHandler.saveObjectToSharedPreference("UserInfo", "UserInfo", userInfo);
+                            SharedPreferenceHandler.saveObjectToSharedPreference(ctx,"UserInfo", "UserInfo", userInfo);
 
                             if(username.compareTo("admin") == 0){
                                 Intent intent = new Intent(getApplicationContext(),AdminHomeActivity.class);

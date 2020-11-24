@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DatabaseHandler {
-    static public String databaseURL = "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec";
-    static public String PLAYERS_SHEET_NAME = "Items";
-    static public String EVENTS_SHEET_NAME = "events";
-    static public String reservationListSheetName = "reservationList";
-    static public int    socketTimeOut = 50000;
+    final static public String databaseURL = "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec";
+    final static public String PLAYERS_SHEET_NAME = "Items";
+    final static public String EVENTS_SHEET_NAME = "events";
+    final static public String reservationListSheetName = "reservationList";
+    final static public int    socketTimeOut = 50000;
 
 
     static public class WriteReturnCodes{

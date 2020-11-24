@@ -52,7 +52,7 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
     Button buttonLogOut;
     Button buttonViewEvents;
 
-    SharedPreferenceHandler mSharedPreferenceHandler;
+    //SharedPreferenceHandler mSharedPreferenceHandler;
     UserInfo userInfo;
     Context ctx;
 //    SharedPreferences sp;
@@ -67,8 +67,8 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
         buttonCreateNewEvent = (Button)findViewById(R.id.btn_createEvent);
         buttonCreateNewEvent.setOnClickListener(this);
 
-        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
-        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo", "UserInfo", UserInfo.class);
+//        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = SharedPreferenceHandler.getSavedObjectFromPreference(ctx, "UserInfo", "UserInfo", UserInfo.class);
 //        sp = getSharedPreferences("login",MODE_PRIVATE);
 //        sp_editor = sp.edit();
         buttonLogOut = (Button)findViewById(R.id.btn_LogOutAdmin);
@@ -85,7 +85,7 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
         if(v == buttonLogOut){
 //            sp_editor.putBoolean("logged", false).apply();
 //            sp_editor.putString("username", "").apply();
-            mSharedPreferenceHandler.removeObjectFromSharedPreference("UserInfo", "UserInfo");
+            SharedPreferenceHandler.removeObjectFromSharedPreference(ctx,"UserInfo", "UserInfo");
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             AdminHomeActivity.this.finish();

@@ -9,14 +9,8 @@ import java.lang.reflect.Type;
 
 public class SharedPreferenceHandler {
 
-    Context context;
-
-    public SharedPreferenceHandler(Context context){
-        this.context = context;
-    }
-
-    public void saveObjectToSharedPreference(String preferenceFileName, String serializedObjectKey, Object object){
-        SharedPreferences sharedPreferences = this.context.getSharedPreferences(preferenceFileName, 0);
+    public static void saveObjectToSharedPreference(Context  context, String preferenceFileName, String serializedObjectKey, Object object){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         final Gson gson = new Gson();
         String serializedObject = gson.toJson(object);
@@ -24,8 +18,8 @@ public class SharedPreferenceHandler {
         sharedPreferencesEditor.apply();
     }
 
-    public <GenericClass> GenericClass getSavedObjectFromPreference(String preferenceFileName, String preferenceKey, Type classType){
-        SharedPreferences sharedPreferences = this.context.getSharedPreferences(preferenceFileName,0);
+    public static <GenericClass> GenericClass getSavedObjectFromPreference(Context  context, String preferenceFileName, String preferenceKey, Type classType){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName,0);
         if(sharedPreferences.contains(preferenceKey)){
             final Gson gson = new Gson();
             return gson.fromJson(sharedPreferences.getString(preferenceKey, ""), classType);
@@ -33,8 +27,8 @@ public class SharedPreferenceHandler {
         return null;
     }
 
-    public void removeObjectFromSharedPreference(String preferenceFileName, String preferenceKey){
-        SharedPreferences sharedPreferences = this.context.getSharedPreferences(preferenceFileName, 0);
+    public static void removeObjectFromSharedPreference(Context  context, String preferenceFileName, String preferenceKey){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.remove(preferenceKey);
         sharedPreferencesEditor.apply();

@@ -29,7 +29,7 @@ public class SplashActivity extends AppCompatActivity {
     //SharedPreferences.Editor sp_editor;
     TextView Text;
 
-    SharedPreferenceHandler mSharedPreferenceHandler;
+//    SharedPreferenceHandler mSharedPreferenceHandler;
     Context ctx;
     UserInfo userInfo;
 
@@ -39,8 +39,8 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.splash_activity);
 
         ctx = this;
-        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
-        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo", "UserInfo", UserInfo.class);
+//        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = SharedPreferenceHandler.getSavedObjectFromPreference(ctx,"UserInfo", "UserInfo", UserInfo.class);
 
 
         //sp = getSharedPreferences("login",MODE_PRIVATE);

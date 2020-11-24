@@ -40,7 +40,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 //    SharedPreferences sp;
 //    SharedPreferences.Editor sp_editor;
 
-    SharedPreferenceHandler mSharedPreferenceHandler;
+//    SharedPreferenceHandler mSharedPreferenceHandler;
     UserInfo userInfo;
     Context ctx;
 
@@ -61,8 +61,8 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 //        sp = getSharedPreferences("login",MODE_PRIVATE);
 //        sp_editor = sp.edit();
 
-        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
-        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo", "UserInfo", UserInfo.class);
+//        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = SharedPreferenceHandler.getSavedObjectFromPreference(ctx,"UserInfo", "UserInfo", UserInfo.class);
 
 //        username = sp.getString("username", "");
 //        playerName = sp.getString("firstName", "");
