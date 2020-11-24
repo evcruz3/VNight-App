@@ -1,13 +1,17 @@
 package com.example.vnight;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +25,9 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
+import com.example.vnight.utils.SharedPreferenceHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,14 +43,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button buttonLogIn;
     EditText editTextUsername, editTextPassword;
     ProgressDialog loading;
+    ImageView passwordViewButton;
 
-    SharedPreferences sp;
-    SharedPreferences.Editor sp_editor;
+    SharedPreferenceHandler mSharedPreferenceHandler;
+    UserInfo userInfo;
+
+    Context ctx;
+
+//    SharedPreferences sp;
+//    SharedPreferences.Editor sp_editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_acivity);
+        ctx = this;
+
+        mSharedPreferenceHandler = new SharedPreferenceHandler(this);
+
+
 
         buttonAddItem = (Button)findViewById(R.id.btn_register);
         buttonAddItem.setOnClickListener(this);
@@ -58,8 +75,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         editTextUsername = (EditText)findViewById(R.id.username);
         editTextPassword = (EditText)findViewById(R.id.password);
 
-        sp = getSharedPreferences("login",MODE_PRIVATE);
-        sp_editor = sp.edit();
+        passwordViewButton = (ImageView)findViewById(R.id.iv_showPassBtn);
+        passwordViewButton.setOnClickListener(this);
+
+//        sp = getSharedPreferences("login",MODE_PRIVATE);
+//        sp_editor = sp.edit();
 
     }
 
@@ -85,6 +105,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         }
 
+        if(v==passwordViewButton){
+            if(editTextPassword.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())){
+                editTextPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            }
+            else{
+                editTextPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
+        }
+
     }
 
     private void checkLogInCredentials(final String username, final String password) {
@@ -98,9 +127,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Boolean logged = false;
                         String firstName = "";
                         String lastName = "";
-                        String batch = "";
+                        int batch = -1;
                         String contactNum = "";
-                        int userID = 0;
+                        int entryID = 0;
                         loading.dismiss();
 
                         try {
@@ -114,29 +143,37 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                                 JSONObject jo = jarray.getJSONObject(i);
 
+
                                 logged = jo.getBoolean("logged");
                                 firstName = jo.getString("firstName");
                                 lastName = jo.getString("lastName");
-                                batch = jo.getString("batch");
+                                batch = jo.getInt("batch");
                                 contactNum = jo.getString("contactNum");
-                                userID = jo.getInt("entryID");
+                                entryID = jo.getInt("entryID");
+
+
 
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        System.out.println("return: " + firstName + lastName + batch + contactNum);
+                        //System.out.println("return: " + firstName + lastName + batch + contactNum);
 
                         if(logged){
 
-                            sp_editor.putInt("entryID", userID).apply();
-                            sp_editor.putString("username", username).apply();
-                            sp_editor.putBoolean("logged",true).apply();
-                            sp_editor.putString("firstName", firstName).apply();
-                            sp_editor.putString("lastName", lastName).apply();
-                            sp_editor.putString("batch", batch).apply();
-                            sp_editor.putString("contactNum",contactNum).apply();
+
+//                            sp_editor.putInt("entryID", entryID).apply();
+//                            sp_editor.putString("username", username).apply();
+//                            sp_editor.putBoolean("logged",true).apply();
+//                            sp_editor.putString("firstName", firstName).apply();
+//                            sp_editor.putString("lastName", lastName).apply();
+//                            sp_editor.putInt("batch", batch).apply();
+//                            sp_editor.putString("contactNum",contactNum).apply();
+
+                            userInfo = new UserInfo(entryID, firstName, lastName, batch, contactNum, username);
+                            mSharedPreferenceHandler.saveObjectToSharedPreference("UserInfo", "UserInfo", userInfo);
+
                             if(username.compareTo("admin") == 0){
                                 Intent intent = new Intent(getApplicationContext(),AdminHomeActivity.class);
                                 startActivity(intent);

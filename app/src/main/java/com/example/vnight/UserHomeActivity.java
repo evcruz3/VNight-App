@@ -1,6 +1,7 @@
 package com.example.vnight;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,7 +29,9 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
+import com.example.vnight.utils.SharedPreferenceHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,18 +41,25 @@ import java.util.Map;
 public class UserHomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView welcomeText;
-    SharedPreferences sp;
-    SharedPreferences.Editor sp_editor;
+//    SharedPreferences sp;
+//    SharedPreferences.Editor sp_editor;
     Button buttonLogOut, buttonViewEvents, buttonSeeReservedPlayers;
     String playerName;
+    SharedPreferenceHandler mSharedPreferenceHandler;
+    Context ctx;
+    UserInfo userInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_home_activity);
+        ctx = this;
 
-        sp = getSharedPreferences("login",MODE_PRIVATE);
-        sp_editor = sp.edit();
+        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo","UserInfo", UserInfo.class);
+//        sp = getSharedPreferences("login",MODE_PRIVATE);
+//        sp_editor = sp.edit();
+
         buttonLogOut = (Button)findViewById(R.id.btn_logOut);
         buttonLogOut.setOnClickListener(this);
         buttonViewEvents = (Button)findViewById(R.id.btn_viewEvents);
@@ -57,8 +67,12 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         buttonSeeReservedPlayers = (Button)findViewById(R.id.btn_list_reserved);
         buttonSeeReservedPlayers.setOnClickListener(this);
 
-        String username = sp.getString("username", "");
-        playerName = sp.getString("firstName", "");
+//        String username = sp.getString("username", "");
+//        playerName = sp.getString("firstName", "");
+
+        String username = userInfo.getUsername();
+        playerName = userInfo.getFirstName();
+
 
         welcomeText = (TextView)findViewById(R.id.textView2);
         welcomeText.setText("Welcome, "+username);
@@ -67,8 +81,9 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v){
         if(v == buttonLogOut){
-            sp_editor.putBoolean("logged", false).apply();
-            sp_editor.putString("username", "").apply();
+//            sp_editor.putBoolean("logged", false).apply();
+//            sp_editor.putString("username", "").apply();
+            mSharedPreferenceHandler.removeObjectFromSharedPreference("UserInfo", "UserInfo");
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             UserHomeActivity.this.finish();

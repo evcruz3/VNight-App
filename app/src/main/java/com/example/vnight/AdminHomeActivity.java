@@ -3,6 +3,7 @@ package com.example.vnight;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,7 +36,9 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
+import com.example.vnight.utils.SharedPreferenceHandler;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,18 +51,26 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
     Button buttonCreateNewEvent;
     Button buttonLogOut;
     Button buttonViewEvents;
-    SharedPreferences sp;
-    SharedPreferences.Editor sp_editor;
+
+    SharedPreferenceHandler mSharedPreferenceHandler;
+    UserInfo userInfo;
+    Context ctx;
+//    SharedPreferences sp;
+//    SharedPreferences.Editor sp_editor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_home);
+        ctx = this;
 
         buttonCreateNewEvent = (Button)findViewById(R.id.btn_createEvent);
         buttonCreateNewEvent.setOnClickListener(this);
-        sp = getSharedPreferences("login",MODE_PRIVATE);
-        sp_editor = sp.edit();
+
+        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo", "UserInfo", UserInfo.class);
+//        sp = getSharedPreferences("login",MODE_PRIVATE);
+//        sp_editor = sp.edit();
         buttonLogOut = (Button)findViewById(R.id.btn_LogOutAdmin);
         buttonLogOut.setOnClickListener(this);
         buttonViewEvents = (Button)findViewById(R.id.btn_viewEvents);
@@ -72,8 +83,9 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
             openDialogBox();
         }
         if(v == buttonLogOut){
-            sp_editor.putBoolean("logged", false).apply();
-            sp_editor.putString("username", "").apply();
+//            sp_editor.putBoolean("logged", false).apply();
+//            sp_editor.putString("username", "").apply();
+            mSharedPreferenceHandler.removeObjectFromSharedPreference("UserInfo", "UserInfo");
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             AdminHomeActivity.this.finish();

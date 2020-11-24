@@ -1,6 +1,7 @@
 package com.example.vnight;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +21,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
+import com.example.vnight.utils.SharedPreferenceHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +37,13 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
     Integer positionID;
     HashMap<String, String> event;
 
-    SharedPreferences sp;
-    SharedPreferences.Editor sp_editor;
+//    SharedPreferences sp;
+//    SharedPreferences.Editor sp_editor;
+
+    SharedPreferenceHandler mSharedPreferenceHandler;
+    UserInfo userInfo;
+    Context ctx;
+
     String username;
     String playerName, playerSurname;
     boolean isAdmin;
@@ -48,12 +56,20 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
         event = (HashMap<String, String>) getIntent().getSerializableExtra("eventDetails");
         positionID = (Integer) getIntent().getSerializableExtra("positionID");
 
-        sp = getSharedPreferences("login",MODE_PRIVATE);
-        sp_editor = sp.edit();
+        ctx = this;
 
-        username = sp.getString("username", "");
-        playerName = sp.getString("firstName", "");
-        playerSurname = sp.getString("lastName", "");
+//        sp = getSharedPreferences("login",MODE_PRIVATE);
+//        sp_editor = sp.edit();
+
+        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo", "UserInfo", UserInfo.class);
+
+//        username = sp.getString("username", "");
+//        playerName = sp.getString("firstName", "");
+//        playerSurname = sp.getString("lastName", "");
+        username = userInfo.getUsername();
+        playerName = userInfo.getFirstName();
+        playerSurname = userInfo.getLastName();
 
         isAdmin = username.compareTo("admin") == 0 ? true : false;
 

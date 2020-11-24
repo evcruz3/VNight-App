@@ -1,5 +1,6 @@
 package com.example.vnight;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,21 +19,32 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
+import com.example.vnight.utils.SharedPreferenceHandler;
 
 public class SplashActivity extends AppCompatActivity {
 
-    SharedPreferences sp;
-    SharedPreferences.Editor sp_editor;
+    //SharedPreferences sp;
+    //SharedPreferences.Editor sp_editor;
     TextView Text;
+
+    SharedPreferenceHandler mSharedPreferenceHandler;
+    Context ctx;
+    UserInfo userInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_activity);
 
-        sp = getSharedPreferences("login",MODE_PRIVATE);
-        sp_editor = sp.edit();
+        ctx = this;
+        mSharedPreferenceHandler = new SharedPreferenceHandler(ctx);
+        userInfo = mSharedPreferenceHandler.getSavedObjectFromPreference("UserInfo", "UserInfo", UserInfo.class);
+
+
+        //sp = getSharedPreferences("login",MODE_PRIVATE);
+        //sp_editor = sp.edit();
         Text = (TextView)findViewById(R.id.textView);
         Intent intent;
 
@@ -43,16 +55,17 @@ public class SplashActivity extends AppCompatActivity {
 //            Text.setText("Logged: False");
         Text.setText("Initializing...");
 
-        if(sp.getBoolean("logged",false)){
+        if(userInfo != null){
 
-            if(sp.getString("username","").compareTo("admin") == 0)
+//            if(sp.getString("username","").compareTo("admin") == 0)
+            if(userInfo.getUsername().compareTo("admin") == 0)
                 startMainActivity(new Intent(getApplicationContext(),AdminHomeActivity.class));
             else
                 startMainActivity( new Intent(getApplicationContext(),UserHomeActivity.class));
         }
         else {
             {
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=getItems",
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=pokeServer",
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
