@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
+    <TextView
         android:id="@+id/et_eventName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,27 +26,29 @@
         android:layout_marginEnd="64dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView10">
+        app:layout_constraintTop_toBottomOf="@+id/tv_reservationOn">
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_location"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
+                android:paddingBottom="8dp"
                 android:text="Location" />
 
-            <EditText
+            <TextView
                 android:id="@+id/et_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name"
+
+                android:paddingBottom="8dp"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -54,7 +56,8 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_date"
@@ -62,16 +65,17 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
+                android:paddingBottom="8dp"
                 android:text="Date" />
 
-            <EditText
+            <TextView
                 android:id="@+id/et_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name"
+
+                android:paddingBottom="8dp"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -79,7 +83,8 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_timeStart"
@@ -87,16 +92,17 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
+                android:paddingBottom="8dp"
                 android:text="Time Start" />
 
-            <EditText
+            <TextView
                 android:id="@+id/et_timeStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name"
+
+                android:paddingBottom="8dp"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -104,7 +110,8 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_timeEnd"
@@ -112,16 +119,17 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
+                android:paddingBottom="8dp"
                 android:text="Time End" />
 
-            <EditText
+            <TextView
                 android:id="@+id/et_timeEnd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name"
+
+                android:paddingBottom="8dp"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -129,7 +137,8 @@
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/tv_participants"
@@ -139,25 +148,23 @@
                 android:gravity="center_vertical"
                 android:text="Participants" />
 
-            <EditText
+            <TextView
                 android:id="@+id/et_participants"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Name"
+
                 android:textAlignment="center"
                 android:textSize="14sp" />
         </TableRow>
     </TableLayout>
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/tv_reservationOn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Status: Open"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_eventName" />
@@ -166,10 +173,19 @@
         android:id="@+id/btn_actionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:layout_marginBottom="32dp"
         android:text="Delete Event"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_editEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:text="Edit Event"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_actionButton"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
