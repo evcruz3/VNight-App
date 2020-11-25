@@ -29,6 +29,8 @@ public class DatabaseHandler {
     final static public String EVENTS_SHEET_NAME = "events";
     final static public String reservationListSheetName = "reservationList";
     final static public int    socketTimeOut = 50000;
+    final static public double APP_VERSION = 0.20201125;
+    final static public String APP_NOT_SUPPORTED = "-3";
 
 
     static public class WriteReturnCodes{
@@ -58,7 +60,12 @@ public class DatabaseHandler {
                     @Override
                     public void onResponse(String response) {
                         loading.dismiss();
-                        responseListener.processResponse(response);
+                        if(response.compareTo(APP_NOT_SUPPORTED) == 0){
+                            Toast.makeText(ctx, "Your app is not supported. Please update", Toast.LENGTH_LONG);
+                        }
+                        else {
+                            responseListener.processResponse(response);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -73,12 +80,15 @@ public class DatabaseHandler {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
 
-                params.putAll(entries);
+                if(entries != null)
+                    params.putAll(entries);
                 //here we pass params
 
+                params.put("appVersion", String.valueOf(APP_VERSION));
                 params.put("action",action);
 //                params.put("key", key);
-                params.put("sheetName", sheetName);
+                if(sheetName != null)
+                    params.put("sheetName", sheetName);
 
 
                 return params;
@@ -94,21 +104,26 @@ public class DatabaseHandler {
     }
 
     static public void editRowFromSheetByID(final Context ctx, final String sheetName, final int entryID, final Map<String,String> entries, final onResponseListener responseListener){
-        //final ProgressDialog loading = ProgressDialog.show(ctx,"Editing Entry...","Editing entry of "+sheetName+". Please wait");
+        final ProgressDialog loading = ProgressDialog.show(ctx,"Editing Entry...","Editing entry of "+sheetName+". Please wait");
         final String action = "editRowFromSheetByID";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, DatabaseHandler.databaseURL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //loading.dismiss();
-                        responseListener.processResponse(response);
+                        loading.dismiss();
+                        if(response.compareTo(APP_NOT_SUPPORTED) == 0){
+                            Toast.makeText(ctx, "Your app is not supported. Please update", Toast.LENGTH_LONG);
+                        }
+                        else {
+                            responseListener.processResponse(response);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        //loading.dismiss();
+                        loading.dismiss();
                         Toast.makeText(ctx,"A network problem has occurred. Please try again",Toast.LENGTH_LONG).show();
                     }
                 }
@@ -118,6 +133,7 @@ public class DatabaseHandler {
                 Map<String, String> params = new HashMap<>();
 
                 params.putAll(entries);
+                params.put("appVersion", String.valueOf(APP_VERSION));
                 params.put("entryID", ""+entryID);
                 //here we pass params
 
@@ -139,44 +155,51 @@ public class DatabaseHandler {
     }
 
     static public void getItemsFromSheet(final Context ctx, final String sheetName, final String[] keys, final onResponseProcessedListener responseProcessedListener){
-        //final ProgressDialog loading =  ProgressDialog.show(ctx,"Fetching Data","please wait",false,true);
+        final ProgressDialog loading =  ProgressDialog.show(ctx,"Fetching Data","please wait",false,true);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=getItemsFromSheet&sheetName="+sheetName,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=getItemsFromSheet&sheetName="+sheetName+"&appVersion="+String.valueOf(APP_VERSION),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        ArrayList<HashMap<String, String>> list = new ArrayList<>();
-
-                        //System.out.println(jsonResponse);
-                        //loading.dismiss();
-
-                        try {
-                            //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
-                            JSONObject jobj = new JSONObject(response);
-                            JSONArray jarray = jobj.getJSONArray("items");
-
-
-                            for (int i = 0; i < jarray.length(); i++) {
-
-                                JSONObject jo = jarray.getJSONObject(i);
-                                HashMap<String, String> item = new HashMap<>();
-
-                                for(int j = 0; j<keys.length; j++){
-                                    item.put(keys[j], jo.getString(keys[j]));
-                                }
-
-                                list.add(item);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        loading.dismiss();
+                        if(response.compareTo(APP_NOT_SUPPORTED) == 0){
+                            Toast.makeText(ctx, "Your app is not supported. Please update", Toast.LENGTH_LONG);
                         }
-                        responseProcessedListener.processList(list);
+                        else {
+                            ArrayList<HashMap<String, String>> list = new ArrayList<>();
+
+                            //System.out.println(jsonResponse);
+                            //loading.dismiss();
+
+                            try {
+                                //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
+                                JSONObject jobj = new JSONObject(response);
+                                JSONArray jarray = jobj.getJSONArray("items");
+
+
+                                for (int i = 0; i < jarray.length(); i++) {
+
+                                    JSONObject jo = jarray.getJSONObject(i);
+                                    HashMap<String, String> item = new HashMap<>();
+
+                                    for (int j = 0; j < keys.length; j++) {
+                                        item.put(keys[j], jo.getString(keys[j]));
+                                    }
+
+                                    list.add(item);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            responseProcessedListener.processList(list);
+                        }
                     }
                 },
 
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        loading.dismiss();
                         Toast.makeText(ctx,"A network problem has occurred. Please try again",Toast.LENGTH_LONG).show();
                     }
                 }
@@ -194,11 +217,16 @@ public class DatabaseHandler {
     }
 
     static public void deleteRowFromSheetByID(final Context ctx, final String sheetName, final String entryID, final onDeleteListener deleteListener){
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=deleteRowFromSheetByID&sheetName="+sheetName+"&entryID="+entryID,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=deleteRowFromSheetByID&sheetName="+sheetName+"&entryID="+entryID+"&appVersion="+String.valueOf(APP_VERSION),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        deleteListener.onDelete(response);
+                        if(response.compareTo(APP_NOT_SUPPORTED) == 0){
+                            Toast.makeText(ctx, "Your app is not supported. Please update", Toast.LENGTH_LONG);
+                        }
+                        else {
+                            deleteListener.onDelete(response);
+                        }
                     }
                 },
 
@@ -227,7 +255,12 @@ public class DatabaseHandler {
                     @Override
                     public void onResponse(String response) {
                         loading.dismiss();
-                        responseListener.processResponse(response);
+                        if(response.compareTo(APP_NOT_SUPPORTED) == 0){
+                            Toast.makeText(ctx, "Your app is not supported. Please update", Toast.LENGTH_LONG);
+                        }
+                        else {
+                            responseListener.processResponse(response);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -244,7 +277,7 @@ public class DatabaseHandler {
 
                 params.putAll(entries);
                 //here we pass params
-
+                params.put("appVersion", String.valueOf(APP_VERSION));
                 params.put("action","addRowEntryToSheet");
 //                params.put("key", key);
                 params.put("sheetName", sheetName);

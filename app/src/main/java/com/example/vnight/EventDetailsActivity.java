@@ -137,7 +137,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                 alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        final ProgressDialog loading = ProgressDialog.show(EventDetailsActivity.this, "Removing Event", "Please wait");
+                        //final ProgressDialog loading = ProgressDialog.show(EventDetailsActivity.this, "Removing Event", "Please wait");
                         Map<String, String> params = new HashMap<>();
 
                         //params.put("action","createNewEvent");
@@ -146,7 +146,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                         DatabaseHandler.doActionToSheet(EventDetailsActivity.this, "events", "deleteEvent", params, new DatabaseHandler.onResponseListener() {
                             @Override
                             public void processResponse(String response) {
-                                loading.dismiss();
+                                //loading.dismiss();
                                 if (response.compareTo("0") == 0) {
                                     eventsList.remove(eventsList.indexOf(event));
                                     Toast.makeText(EventDetailsActivity.this, "Event removed", Toast.LENGTH_LONG).show();

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -64,34 +65,14 @@ public class SplashActivity extends AppCompatActivity {
                 startMainActivity( new Intent(getApplicationContext(),UserHomeActivity.class));
         }
         else {
-            {
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=pokeServer",
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Text.setText("All is set!");
-
-                                startMainActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                            }
-                        },
-
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Text.setText("Network Error. Please check your internet connection");
-                            }
-                        }
-                );
-
-                int socketTimeOut = 50000;
-                RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-                stringRequest.setRetryPolicy(policy);
-
-                RequestQueue queue = Volley.newRequestQueue(this);
-                queue.add(stringRequest);
-            }
-
+            DatabaseHandler.doActionToSheet(ctx, null, "pokeServer", null, new DatabaseHandler.onResponseListener() {
+                @Override
+                public void processResponse(String response) {
+                    Text.setText("All is set!");
+                    startMainActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    SplashActivity.this.finish();
+                }
+            });
         }
 
     }

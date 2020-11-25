@@ -101,12 +101,12 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void viewEvents(){
-        final ProgressDialog loading = ProgressDialog.show(this,"Loading Events..","Please wait");
+        //final ProgressDialog loading = ProgressDialog.show(this,"Loading Events..","Please wait");
         String[] keys = {"entryID", "key", "eventName", "eventDate", "eventTimeStart", "eventTimeEnd", "eventLocation","reservationOn","participants"};
         DatabaseHandler.getItemsFromSheet(UserHomeActivity.this, "events", keys, new DatabaseHandler.onResponseProcessedListener (){
             @Override
             public void processList(final ArrayList<HashMap<String, String>> list){
-                loading.dismiss();
+                //loading.dismiss();
                 if(list.isEmpty()){
                     Toast.makeText(UserHomeActivity.this, "No items can be shown", Toast.LENGTH_LONG).show();
                 }
@@ -124,14 +124,14 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
 
     private void   addItemToSheet(final String name, final String positionSelected) {
 
-        final ProgressDialog loading = ProgressDialog.show(this,"Reserving...","Please wait");
+        //final ProgressDialog loading = ProgressDialog.show(this,"Reserving...","Please wait");
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec?action=reserveSlot",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                        loading.dismiss();
+                        //loading.dismiss();
                         Toast.makeText(UserHomeActivity.this,response,Toast.LENGTH_LONG).show();
 //                        Intent intent = new Intent(getApplicationContext(), UserHomeActivity.class);
 //                        startActivity(intent);
@@ -142,7 +142,7 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        loading.dismiss();
+                        //loading.dismiss();
                         Toast.makeText(UserHomeActivity.this,"A problem has occurred. Please try again",Toast.LENGTH_LONG).show();
 //                        Intent intent = new Intent(getApplicationContext(), UserHomeActivity.class);
 //                        startActivity(intent);

@@ -116,114 +116,78 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+
     private void checkLogInCredentials(final String username, final String password) {
 
-        loading =  ProgressDialog.show(this,"Loading","please wait",false,true);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, DatabaseHandler.databaseURL,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Boolean logged = false;
-                        String firstName = "";
-                        String lastName = "";
-                        int batch = -1;
-                        String contactNum = "";
-                        int entryID = 0;
-                        loading.dismiss();
-
-                        try {
-                            //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
-                            System.out.println(response);
-                            JSONObject jobj = new JSONObject(response);
-                            JSONArray jarray = jobj.getJSONArray("items");
 
 
-                            for (int i = 0; i < jarray.length(); i++) {
+        //loading =  ProgressDialog.show(this,"Loading","please wait",false,true);
 
-                                JSONObject jo = jarray.getJSONObject(i);
+        Map<String, String> params = new HashMap<>();
 
+        //here we pass params
+        //params.put("action","checkLoginCredentials");
+        params.put("username",username);
+        params.put("password",password);
 
-                                logged = jo.getBoolean("logged");
-                                firstName = jo.getString("firstName");
-                                lastName = jo.getString("lastName");
-                                batch = jo.getInt("batch");
-                                contactNum = jo.getString("contactNum");
-                                entryID = jo.getInt("entryID");
-
-
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        //System.out.println("return: " + firstName + lastName + batch + contactNum);
-
-                        if(logged){
-
-
-//                            sp_editor.putInt("entryID", entryID).apply();
-//                            sp_editor.putString("username", username).apply();
-//                            sp_editor.putBoolean("logged",true).apply();
-//                            sp_editor.putString("firstName", firstName).apply();
-//                            sp_editor.putString("lastName", lastName).apply();
-//                            sp_editor.putInt("batch", batch).apply();
-//                            sp_editor.putString("contactNum",contactNum).apply();
-
-                            userInfo = new UserInfo(entryID, firstName, lastName, batch, contactNum, username);
-                            SharedPreferenceHandler.saveObjectToSharedPreference(ctx,"UserInfo", "UserInfo", userInfo);
-
-                            if(username.compareTo("admin") == 0){
-                                Intent intent = new Intent(getApplicationContext(),AdminHomeActivity.class);
-                                startActivity(intent);
-
-                            }
-                            else {
-                                Intent intent = new Intent(getApplicationContext(), UserHomeActivity.class);
-                                startActivity(intent);
-                            }
-                            LoginActivity.this.finish();
-                        }
-                        else{
-                            Toast.makeText(LoginActivity.this,"Invalid username and password",Toast.LENGTH_LONG).show();
-                        }
-
-                        //Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                        //startActivity(intent);
-                    }
-                },
-
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        ) {
+        DatabaseHandler.doActionToSheet(ctx, "Items", "checkLoginCredentials", params, new DatabaseHandler.onResponseListener() {
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
+            public void processResponse(String response) {
+                Boolean logged = false;
+                String firstName = "";
+                String lastName = "";
+                int batch = -1;
+                String contactNum = "";
+                int entryID = 0;
+                //loading.dismiss();
 
-                //here we pass params
-                params.put("action","checkLoginCredentials");
-                params.put("username",username);
-                params.put("password",password);
+                try {
+                    //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
+                    System.out.println(response);
+                    JSONObject jobj = new JSONObject(response);
+                    JSONArray jarray = jobj.getJSONArray("items");
 
-                return params;
+
+                    for (int i = 0; i < jarray.length(); i++) {
+
+                        JSONObject jo = jarray.getJSONObject(i);
+
+
+                        logged = jo.getBoolean("logged");
+                        firstName = jo.getString("firstName");
+                        lastName = jo.getString("lastName");
+                        batch = jo.getInt("batch");
+                        contactNum = jo.getString("contactNum");
+                        entryID = jo.getInt("entryID");
+
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //System.out.println("return: " + firstName + lastName + batch + contactNum);
+
+                if (logged) {
+                    userInfo = new UserInfo(entryID, firstName, lastName, batch, contactNum, username);
+                    SharedPreferenceHandler.saveObjectToSharedPreference(ctx, "UserInfo", "UserInfo", userInfo);
+
+                    if (username.compareTo("admin") == 0) {
+                        Intent intent = new Intent(getApplicationContext(), AdminHomeActivity.class);
+                        startActivity(intent);
+
+                    } else {
+                        Intent intent = new Intent(getApplicationContext(), UserHomeActivity.class);
+                        startActivity(intent);
+                    }
+                    LoginActivity.this.finish();
+                }
+                else{
+                    Toast.makeText(LoginActivity.this,"Invalid username and password",Toast.LENGTH_LONG).show();
+                }
             }
-        };
-
-        int socketTimeOut = 50000;
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        stringRequest.setRetryPolicy(policy);
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
+        });
 
     }
-
-
 
 }

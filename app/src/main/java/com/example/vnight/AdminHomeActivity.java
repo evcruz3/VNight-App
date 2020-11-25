@@ -96,12 +96,12 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void viewEvents(){
-        final ProgressDialog loading = ProgressDialog.show(this,"Loading Events..","Please wait");
+        //final ProgressDialog loading = ProgressDialog.show(this,"Loading Events..","Please wait");
         String[] keys = {"entryID", "eventName", "eventDate", "eventTimeStart", "eventTimeEnd", "eventLocation","reservationOn","participants"};
         DatabaseHandler.getItemsFromSheet(AdminHomeActivity.this, "events", keys, new DatabaseHandler.onResponseProcessedListener (){
             @Override
             public void processList(final ArrayList<HashMap<String, String>> list){
-                loading.dismiss();
+                //loading.dismiss();
                 if(list.isEmpty()){
                     Toast.makeText(AdminHomeActivity.this, "No items can be shown", Toast.LENGTH_LONG).show();
                 }
