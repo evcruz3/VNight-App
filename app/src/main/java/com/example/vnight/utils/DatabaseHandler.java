@@ -2,6 +2,7 @@ package com.example.vnight.utils;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -23,20 +24,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DatabaseHandler {
+final public class DatabaseHandler {
     final static public String databaseURL = "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec";
     final static public String PLAYERS_SHEET_NAME = "Items";
     final static public String EVENTS_SHEET_NAME = "events";
-    final static public String reservationListSheetName = "reservationList";
+    //final static public String reservationListSheetName = "reservationList";
     final static public int    socketTimeOut = 50000;
-    final static public double APP_VERSION = 0.20201125;
+    final static public double APP_VERSION = 0.20201126;
     final static public String APP_NOT_SUPPORTED = "-3";
 
 
-    static public class WriteReturnCodes{
-        static public String DUPLICATE_KEY_DETECTED = "-1";
-        static public String ROW_WRITE_SUCCESS = "0";
+    final static public class WriteReturnCodes{
+        final static public String DUPLICATE_KEY_DETECTED = "-1";
+        final static public String ROW_WRITE_SUCCESS = "0";
     }
+
+    final static public class DeleteReturnCodes{
+        final static public String ENTRY_DOES_NOT_EXIST = "-1";
+        final static public String DELETE_SUCCESS = "0";
+    }
+
+    final static public class EditReturnCodes{
+        final static public String ENTRY_DOES_NOT_EXIST = "-1";
+        final static public String ENTRY_RENAME_DUPLICATE = "-2";
+        final static public String EDIT_SUCCESS = "0";
+    }
+
+//    final static public class GetReturnCodes {
+//    }
 
     public interface onResponseListener{
         void processResponse(final String response);
@@ -46,8 +61,17 @@ public class DatabaseHandler {
         void processList(final ArrayList<HashMap<String, String>> list);
     }
 
-    public interface onDeleteListener{
-        void onDelete(final String response);
+//    public interface onDeleteListener{
+//        void onDelete(final String response);
+//    }
+
+    static private void addRequestToQueue(Context ctx, StringRequest stringRequest){
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(retryPolicy);
+
+        RequestQueue queue = Volley.newRequestQueue(ctx);
+
+        queue.add(stringRequest);
     }
 
 
@@ -95,12 +119,7 @@ public class DatabaseHandler {
             }
         };
 
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(retryPolicy);
-
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-
-        queue.add(stringRequest);
+        addRequestToQueue(ctx, stringRequest);
     }
 
     static public void editRowFromSheetByID(final Context ctx, final String sheetName, final int entryID, final Map<String,String> entries, final onResponseListener responseListener){
@@ -146,12 +165,7 @@ public class DatabaseHandler {
             }
         };
 
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(retryPolicy);
-
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-
-        queue.add(stringRequest);
+        addRequestToQueue(ctx, stringRequest);
     }
 
     static public void getItemsFromSheet(final Context ctx, final String sheetName, final String[] keys, final onResponseProcessedListener responseProcessedListener){
@@ -166,6 +180,7 @@ public class DatabaseHandler {
                             Toast.makeText(ctx, "Your app is not supported. Please update", Toast.LENGTH_LONG);
                         }
                         else {
+                            Log.d("getItemsFromSheet", response);
                             ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
                             //System.out.println(jsonResponse);
@@ -175,7 +190,8 @@ public class DatabaseHandler {
                                 //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));
                                 JSONObject jobj = new JSONObject(response);
                                 JSONArray jarray = jobj.getJSONArray("items");
-
+//                                int changeID = jobj.getInt("changeID");
+//                                Log.d("getItemsFromSheet.changeID", ""+changeID);
 
                                 for (int i = 0; i < jarray.length(); i++) {
 
@@ -205,18 +221,10 @@ public class DatabaseHandler {
                 }
         );
 
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        stringRequest.setRetryPolicy(policy);
-
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-        queue.add(stringRequest);
-
-
-
+        addRequestToQueue(ctx, stringRequest);
     }
 
-    static public void deleteRowFromSheetByID(final Context ctx, final String sheetName, final String entryID, final onDeleteListener deleteListener){
+    static public void deleteRowFromSheetByID(final Context ctx, final String sheetName, final String entryID, final onResponseListener responseListener){
         StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=deleteRowFromSheetByID&sheetName="+sheetName+"&entryID="+entryID+"&appVersion="+String.valueOf(APP_VERSION),
                 new Response.Listener<String>() {
                     @Override
@@ -225,7 +233,7 @@ public class DatabaseHandler {
                             Toast.makeText(ctx, "Your app is not supported. Please update", Toast.LENGTH_LONG);
                         }
                         else {
-                            deleteListener.onDelete(response);
+                            responseListener.processResponse(response);
                         }
                     }
                 },
@@ -238,12 +246,7 @@ public class DatabaseHandler {
                 }
         );
 
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        stringRequest.setRetryPolicy(policy);
-
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-        queue.add(stringRequest);
+        addRequestToQueue(ctx, stringRequest);
     }
 
     static public void addRowEntryToSheet(final Context ctx, final String sheetName, final Map<String,String> entries, final onResponseListener responseListener ){
@@ -287,13 +290,8 @@ public class DatabaseHandler {
             }
         };
 
-        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        stringRequest.setRetryPolicy(retryPolicy);
-
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-
-        queue.add(stringRequest);
-
+        addRequestToQueue(ctx, stringRequest);
 
     }
+
 }

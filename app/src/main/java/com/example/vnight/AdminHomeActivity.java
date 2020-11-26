@@ -97,7 +97,7 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
 
     private void viewEvents(){
         //final ProgressDialog loading = ProgressDialog.show(this,"Loading Events..","Please wait");
-        String[] keys = {"entryID", "eventName", "eventDate", "eventTimeStart", "eventTimeEnd", "eventLocation","reservationOn","participants"};
+        String[] keys = {"entryID", "key", "eventName", "eventDate", "eventTimeStart", "eventTimeEnd", "eventLocation","reservationOn","participants"};
         DatabaseHandler.getItemsFromSheet(AdminHomeActivity.this, "events", keys, new DatabaseHandler.onResponseProcessedListener (){
             @Override
             public void processList(final ArrayList<HashMap<String, String>> list){

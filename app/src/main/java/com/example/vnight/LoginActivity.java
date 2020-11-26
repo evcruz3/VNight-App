@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -37,6 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "LoginActivity";
 
     Button buttonAddItem;
     Button buttonListItem;
@@ -140,6 +143,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 String contactNum = "";
                 int entryID = 0;
                 //loading.dismiss();
+                Log.d(TAG, response);
 
                 try {
                     //JSONObject jobj = new JSONObject(jsonResponse.substring(jsonResponse.indexOf("{"),jsonResponse.lastIndexOf("}")+1));

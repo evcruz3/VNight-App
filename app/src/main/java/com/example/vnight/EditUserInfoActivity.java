@@ -101,12 +101,6 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                 return;
             }
             else {
-                /* put inside the edit database listener
-                userInfo.setFirstName(firstName);
-                userInfo.setLastName(lastName);
-                userInfo.setBatch(batch);
-                userInfo.setContactNum(contactNum);*/
-                // TODO: insert database server edit here
                 Map<String, String> params = new HashMap<>();
 
                 //here we pass params
@@ -120,7 +114,7 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                 DatabaseHandler.editRowFromSheetByID(ctx, "Items", userInfo.getEntryID(), params, new DatabaseHandler.onResponseListener() {
                     @Override
                     public void processResponse(String response) {
-                        if(response.compareTo("0") == 0){
+                        if(response.compareTo(DatabaseHandler.EditReturnCodes.EDIT_SUCCESS) == 0){
                             Toast.makeText(ctx,"Your profile has been updated.", Toast.LENGTH_LONG).show();
                             userInfo.setUsername(username);
                             userInfo.setFirstName(firstName);
@@ -132,10 +126,10 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
                             startActivity(intent);
                             EditUserInfoActivity.this.finish();
                         }
-                        else if(response.compareTo("-1") == 0){
+                        else if(response.compareTo(DatabaseHandler.EditReturnCodes.ENTRY_DOES_NOT_EXIST) == 0){
                             Toast.makeText(ctx,"Entry not found", Toast.LENGTH_LONG).show();
                         }
-                        else if(response.compareTo("-2") == 0){
+                        else if(response.compareTo(DatabaseHandler.EditReturnCodes.ENTRY_RENAME_DUPLICATE) == 0){
                             Toast.makeText(ctx,"username already exists", Toast.LENGTH_LONG).show();
                         }
                         else

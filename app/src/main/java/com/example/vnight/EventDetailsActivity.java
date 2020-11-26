@@ -147,14 +147,14 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                             @Override
                             public void processResponse(String response) {
                                 //loading.dismiss();
-                                if (response.compareTo("0") == 0) {
+                                if (response.compareTo(DatabaseHandler.DeleteReturnCodes.DELETE_SUCCESS) == 0) {
                                     eventsList.remove(eventsList.indexOf(event));
                                     Toast.makeText(EventDetailsActivity.this, "Event removed", Toast.LENGTH_LONG).show();
                                     Intent intent = new Intent(EventDetailsActivity.this, EventsListActivity.class);
                                     intent.putExtra("eventsList", eventsList);
                                     startActivity(intent);
                                     EventDetailsActivity.this.finish();
-                                } else if (response.compareTo("-1") == 0) {
+                                } else if (response.compareTo(DatabaseHandler.DeleteReturnCodes.ENTRY_DOES_NOT_EXIST) == 0) {
                                     Toast.makeText(EventDetailsActivity.this, "An error occurred. Please Try Again", Toast.LENGTH_LONG).show();
                                 } else {
                                     Toast.makeText(EventDetailsActivity.this, response, Toast.LENGTH_LONG).show();
@@ -248,9 +248,9 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                 DatabaseHandler.addRowEntryToSheet(EventDetailsActivity.this, event.get("key"), params, new DatabaseHandler.onResponseListener() {
                     @Override
                     public void processResponse(String response) {
-                        if(response.compareTo("0") == 0)
+                        if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0)
                             Toast.makeText(EventDetailsActivity.this, "Reservation for "+reservedName+" successful", Toast.LENGTH_LONG).show();
-                        else if (response.compareTo("-1") == 0){
+                        else if (response.compareTo(DatabaseHandler.WriteReturnCodes.DUPLICATE_KEY_DETECTED) == 0){
                             Toast.makeText(EventDetailsActivity.this, "You've already made a reservation for " + reservedName, Toast.LENGTH_LONG).show();
                         }
                         else{
@@ -417,9 +417,9 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                                     startActivity(new Intent(EventDetailsActivity.this,UserHomeActivity.class));
                                     EventDetailsActivity.this.finish();
                                 }
-                            } else if (response.compareTo("-2") == 0) {
+                            } else if (response.compareTo(DatabaseHandler.EditReturnCodes.ENTRY_RENAME_DUPLICATE) == 0) {
                                 Toast.makeText(ctx, "Event '" + name + "' already exists", Toast.LENGTH_LONG).show();
-                            } else if (response.compareTo("-1") == 0) {
+                            } else if (response.compareTo(DatabaseHandler.EditReturnCodes.ENTRY_DOES_NOT_EXIST) == 0) {
                                 Toast.makeText(ctx, "Event '" + name + "' does not exist. It may have been deleted", Toast.LENGTH_LONG).show();
                             }
                             else{
