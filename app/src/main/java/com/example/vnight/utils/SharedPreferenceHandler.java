@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 
-public class SharedPreferenceHandler {
+public final class SharedPreferenceHandler {
 
     public static void saveObjectToSharedPreference(Context  context, String preferenceFileName, String serializedObjectKey, Object object){
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);

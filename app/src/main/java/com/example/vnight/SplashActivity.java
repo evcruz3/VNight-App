@@ -1,10 +1,14 @@
 package com.example.vnight;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.vnight.customClasses.UserInfo;
+import com.example.vnight.services.UsersDatabaseService;
 import com.example.vnight.utils.DatabaseHandler;
 import com.example.vnight.utils.SharedPreferenceHandler;
 
@@ -28,6 +33,7 @@ public class SplashActivity extends AppCompatActivity {
 
     //SharedPreferences sp;
     //SharedPreferences.Editor sp_editor;
+    private static final String TAG = "SplashActivity";
     TextView Text;
 
 //    SharedPreferenceHandler mSharedPreferenceHandler;
@@ -48,6 +54,23 @@ public class SplashActivity extends AppCompatActivity {
         //sp_editor = sp.edit();
         Text = (TextView)findViewById(R.id.textView);
         Intent intent;
+
+        ComponentName componentName = new ComponentName(this, UsersDatabaseService.class);
+        JobInfo info = new JobInfo.Builder(1, componentName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true)
+                .setPeriodic(5*60*1000)
+                .build();
+
+        JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        int resultCode = scheduler.schedule(info);
+
+        if(resultCode == JobScheduler.RESULT_SUCCESS){
+            Log.d(TAG, "Job Scheduled");
+        } else{
+            Log.d(TAG, "Job scheduling failed");
+        }
+
 
 //        if(sp.getBoolean("logged",false)){
 //            Text.setText("Logged: True");
