@@ -33,7 +33,7 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
     TextView welcomeText;
 //    SharedPreferences sp;
 //    SharedPreferences.Editor sp_editor;
-    Button buttonLogOut, buttonViewEvents, buttonSeeReservedPlayers, buttonEditProfile;
+    Button buttonLogOut, buttonViewEvents, buttonEditProfile;
     String playerName;
 //    SharedPreferenceHandler mSharedPreferenceHandler;
     Context ctx;
@@ -54,8 +54,6 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         buttonLogOut.setOnClickListener(this);
         buttonViewEvents = (Button)findViewById(R.id.btn_viewEvents);
         buttonViewEvents.setOnClickListener(this);
-        buttonSeeReservedPlayers = (Button)findViewById(R.id.btn_list_reserved);
-        buttonSeeReservedPlayers.setOnClickListener(this);
         buttonEditProfile = (Button)findViewById(R.id.btn_editUserInfo);
         buttonEditProfile.setOnClickListener(this);
 
@@ -86,11 +84,6 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
 //            startActivity(intent);
             //openDialogBox();
             viewEvents();
-        }
-
-        if(v == buttonSeeReservedPlayers){
-            Intent intent = new Intent(getApplicationContext(), ListReservedPlayers.class);
-            startActivity(intent);
         }
 
         if(v == buttonEditProfile){

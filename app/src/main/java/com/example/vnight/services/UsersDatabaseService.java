@@ -67,7 +67,7 @@ public class UsersDatabaseService extends JobService {
                                     }
                                     else {
                                         Log.d(TAG, "response" + response);
-                                        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+                                        HashMap<String,HashMap<String, String>> list = new HashMap<String,HashMap<String, String>>();
 
                                         //System.out.println(jsonResponse);
                                         //loading.dismiss();
@@ -88,7 +88,7 @@ public class UsersDatabaseService extends JobService {
                                                     item.put(keys[j], jo.getString(keys[j]));
                                                 }
 
-                                                list.add(item);
+                                                list.put(item.get("entryID"),item);
                                             }
 
                                             //Log.d(TAG, "response: "+response);

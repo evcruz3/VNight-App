@@ -24,7 +24,6 @@
         <activity android:name=".AddItem"/>
         <activity android:name=".ListItem"/>
         <activity android:name=".UserHomeActivity"/>
-        <activity android:name=".ListReservedPlayers"/>
         <activity android:name=".AdminHomeActivity"/>
         <activity android:name=".EventsListActivity"/>
         <activity android:name=".EventDetailsActivity"/>

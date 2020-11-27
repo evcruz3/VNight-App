@@ -13,10 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.EditText;
@@ -31,6 +33,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
+import com.example.vnight.utils.EventsAdapter;
+import com.example.vnight.utils.ReservedPlayersAdapter;
 import com.example.vnight.utils.SharedPreferenceHandler;
 
 import java.util.ArrayList;
@@ -54,6 +58,8 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 //    SharedPreferenceHandler mSharedPreferenceHandler;
     UserInfo userInfo;
     Context ctx;
+    GridView mGridView;
+    ReservedPlayersAdapter reservedPlayersAdapter;
 
     String username;
     String playerName, playerSurname;
@@ -66,6 +72,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
         eventsList = (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("eventsList");
         event = (HashMap<String, String>) getIntent().getSerializableExtra("eventDetails");
         positionID = (Integer) getIntent().getSerializableExtra("positionID");
+        mGridView = (GridView)findViewById(R.id.gv_reservedPlayers);
 
         ctx = this;
 
@@ -121,6 +128,8 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
         eventTimeStart.setText(event.get("eventTimeStart"));
         eventTimeEnd.setText(event.get("eventTimeEnd"));
         eventParticipants.setText(event.get("participants"));
+
+        displayReservedPlayers();
 
     }
 
@@ -442,5 +451,28 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 
         alertDialog.setView(view);
         alertDialog.show();
+    }
+
+    private void displayReservedPlayers(){
+//        GridView mGridView = (GridView)findViewById(R.id.gridview);
+
+        String[] keys = {"entryID", "userID", "position"};
+        DatabaseHandler.getItemsFromSheet(ctx, event.get("key"), keys, new DatabaseHandler.onResponseProcessedListener (){
+            @Override
+            public void processList(final ArrayList<HashMap<String, String>> list){
+                //loading.dismiss();
+                if(list.isEmpty()){
+                    Toast.makeText(ctx, "No items can be shown", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    reservedPlayersAdapter = new ReservedPlayersAdapter(ctx, list);
+                    mGridView.setAdapter(reservedPlayersAdapter);
+
+                    //AdminHomeActivity.this.finish();
+                }
+            }
+        });
+
+
     }
 }
