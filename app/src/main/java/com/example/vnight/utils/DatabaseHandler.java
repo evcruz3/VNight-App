@@ -30,7 +30,7 @@ final public class DatabaseHandler {
     final static public String EVENTS_SHEET_NAME = "events";
     //final static public String reservationListSheetName = "reservationList";
     final static public int    socketTimeOut = 50000;
-    final static public double APP_VERSION = 0.20201126;
+    final static public double APP_VERSION = 0.20201201;
     final static public String APP_NOT_SUPPORTED = "-3";
 
 
@@ -168,10 +168,10 @@ final public class DatabaseHandler {
         addRequestToQueue(ctx, stringRequest);
     }
 
-    static public void getItemsFromSheet(final Context ctx, final String sheetName, final String[] keys, final onResponseProcessedListener responseProcessedListener){
+    static public void getItemsFromSheet(final Context ctx, final String dbName, final String sheetName, final String[] keys, final onResponseProcessedListener responseProcessedListener){
         final ProgressDialog loading =  ProgressDialog.show(ctx,"Fetching Data","please wait",false,true);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=getItemsFromSheet&sheetName="+sheetName+"&appVersion="+String.valueOf(APP_VERSION),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, DatabaseHandler.databaseURL+"?action=getItemsFromSheet&dbName="+dbName+"&sheetName="+sheetName+"&appVersion="+String.valueOf(APP_VERSION),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

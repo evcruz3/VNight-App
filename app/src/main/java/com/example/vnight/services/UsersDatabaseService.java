@@ -138,7 +138,7 @@ public class UsersDatabaseService extends JobService {
         return true;
     }
 
-    static private void addRequestToQueue(Context ctx, StringRequest stringRequest){
+    static public void addRequestToQueue(Context ctx, StringRequest stringRequest){
         RetryPolicy retryPolicy = new DefaultRetryPolicy(DatabaseHandler.socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(retryPolicy);
 

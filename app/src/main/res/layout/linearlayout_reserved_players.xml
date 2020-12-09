@@ -38,8 +38,7 @@
         tools:text="Player Name" />
 
     <TextView
-        android:id="@+id/tv_position
-"
+        android:id="@+id/tv_position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"

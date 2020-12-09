@@ -43,7 +43,7 @@ public class ListItem extends AppCompatActivity {
 
         //getItems();
         String[] keys = {"entryID", "firstName", "lastName", "batch", "contactNum", "username"};
-        DatabaseHandler.getItemsFromSheet(ListItem.this, "Items", keys, new DatabaseHandler.onResponseProcessedListener (){
+        DatabaseHandler.getItemsFromSheet(ListItem.this,  "masterList","Items", keys, new DatabaseHandler.onResponseProcessedListener (){
             @Override
             public void processList(final ArrayList<HashMap<String, String>> list){
                 adapter = new SimpleAdapter(ListItem.this,list,R.layout.list_item_row,

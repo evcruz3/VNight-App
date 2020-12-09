@@ -254,7 +254,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 
                 final String reservedName = gName.isEmpty() ? userInfo.getFirstName() : userID;
 
-                DatabaseHandler.addRowEntryToSheet(EventDetailsActivity.this, event.get("key"), params, new DatabaseHandler.onResponseListener() {
+                DatabaseHandler.doActionToSheet(ctx, event.get("key"), "reserveSlot", params, new DatabaseHandler.onResponseListener(){
                     @Override
                     public void processResponse(String response) {
                         if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0)
@@ -268,6 +268,23 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 
                     }
                 });
+
+//                DatabaseHandler.addRowEntryToSheet(EventDetailsActivity.this, event.get("key"), params, new DatabaseHandler.onResponseListener() {
+//                    @Override
+//                    public void processResponse(String response) {
+//                        if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0)
+//                            Toast.makeText(EventDetailsActivity.this, "Reservation for "+reservedName+" successful", Toast.LENGTH_LONG).show();
+//                        else if (response.compareTo(DatabaseHandler.WriteReturnCodes.DUPLICATE_KEY_DETECTED) == 0){
+//                            Toast.makeText(EventDetailsActivity.this, "You've already made a reservation for " + reservedName, Toast.LENGTH_LONG).show();
+//                        }
+//                        else{
+//                            Toast.makeText(EventDetailsActivity.this, response, Toast.LENGTH_LONG).show();
+//                        }
+//
+//                    }
+//                });
+
+
 
             }
         });
@@ -457,7 +474,8 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 //        GridView mGridView = (GridView)findViewById(R.id.gridview);
 
         String[] keys = {"entryID", "userID", "position"};
-        DatabaseHandler.getItemsFromSheet(ctx, event.get("key"), keys, new DatabaseHandler.onResponseProcessedListener (){
+
+        DatabaseHandler.getItemsFromSheet(ctx, "eventsReservations", event.get("key"), keys, new DatabaseHandler.onResponseProcessedListener (){
             @Override
             public void processList(final ArrayList<HashMap<String, String>> list){
                 //loading.dismiss();
