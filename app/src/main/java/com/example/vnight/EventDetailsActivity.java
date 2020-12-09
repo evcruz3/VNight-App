@@ -1,27 +1,22 @@
 package com.example.vnight;
 
 import android.app.DatePickerDialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.GridView;
+//import android.widget.RecyclerView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -30,10 +25,11 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
-import com.example.vnight.utils.EventsAdapter;
 import com.example.vnight.utils.ReservedPlayersAdapter;
 import com.example.vnight.utils.SharedPreferenceHandler;
 
@@ -47,6 +43,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 
     Button btn_actionButton;
     Button btn_editEvent;
+    Button btn_openDrafter;
     ArrayList<HashMap<String, String>> eventsList;
     Integer positionID;
     HashMap<String, String> event;
@@ -58,7 +55,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 //    SharedPreferenceHandler mSharedPreferenceHandler;
     UserInfo userInfo;
     Context ctx;
-    GridView mGridView;
+    RecyclerView mRecyclerView;
     ReservedPlayersAdapter reservedPlayersAdapter;
 
     String username;
@@ -72,7 +69,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
         eventsList = (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("eventsList");
         event = (HashMap<String, String>) getIntent().getSerializableExtra("eventDetails");
         positionID = (Integer) getIntent().getSerializableExtra("positionID");
-        mGridView = (GridView)findViewById(R.id.gv_reservedPlayers);
+        mRecyclerView = (RecyclerView)findViewById(R.id.gv_reservedPlayers);
 
         ctx = this;
 
@@ -100,6 +97,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
         btn_actionButton = (Button)findViewById(R.id.btn_actionButton);
         reservationOn = (TextView)findViewById(R.id.tv_reservationOn);
         btn_actionButton.setOnClickListener(this);
+        btn_openDrafter = (Button)findViewById(R.id.btn_openDrafter);
         btn_editEvent = (Button)findViewById(R.id.btn_editEvent);
         isEventOpen = event.get("reservationOn").compareTo("TRUE") == 0 ? true:false;
         if(isEventOpen){
@@ -110,12 +108,17 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
         }
 
         if(isAdmin){
+            btn_openDrafter.setVisibility(View.VISIBLE);
+            btn_openDrafter.setEnabled(true);
+            btn_openDrafter.setOnClickListener(this);
             btn_editEvent.setVisibility(View.VISIBLE);
             btn_editEvent.setEnabled(true);
             btn_editEvent.setOnClickListener(this);
             btn_actionButton.setText("Delete Event");
         }
         else{
+            btn_openDrafter.setVisibility(View.INVISIBLE);
+            btn_openDrafter.setEnabled(false);
             btn_editEvent.setVisibility(View.INVISIBLE);
             btn_editEvent.setEnabled(false);
             btn_actionButton.setText("Reserve a Slot");
@@ -206,6 +209,12 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 
         if(v == btn_editEvent){
             openEditEventDialogBox();
+        }
+
+        if(v == btn_openDrafter){
+            Intent intent = new Intent(EventDetailsActivity.this, TeamDrafterActivity.class);
+            intent.putExtra("eventsList", eventsList);
+            startActivity(intent);
         }
     }
 
@@ -471,7 +480,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void displayReservedPlayers(){
-//        GridView mGridView = (GridView)findViewById(R.id.gridview);
+//        RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.RecyclerView);
 
         String[] keys = {"entryID", "userID", "position"};
 
@@ -484,8 +493,8 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                 }
                 else{
                     reservedPlayersAdapter = new ReservedPlayersAdapter(ctx, list);
-                    mGridView.setAdapter(reservedPlayersAdapter);
-
+                    mRecyclerView.setAdapter(reservedPlayersAdapter);
+                    mRecyclerView.setLayoutManager(new GridLayoutManager(ctx,4));
                     //AdminHomeActivity.this.finish();
                 }
             }

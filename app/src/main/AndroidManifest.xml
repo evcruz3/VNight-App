@@ -28,6 +28,7 @@
         <activity android:name=".EventsListActivity"/>
         <activity android:name=".EventDetailsActivity"/>
         <activity android:name=".EditUserInfoActivity"/>
+        <activity android:name=".TeamDrafterActivity"/>
 
         <service android:name=".services.UsersDatabaseService"
             android:permission="android.permission.BIND_JOB_SERVICE"/>

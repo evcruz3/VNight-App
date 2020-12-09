@@ -207,7 +207,7 @@
                 android:paddingLeft="8dp"
                 android:text="Reserved Players" />
 
-            <GridView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/gv_reservedPlayers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -215,9 +215,18 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
 
-            </GridView>
+            </androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/btn_openDrafter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Open Drafter"
+        app:layout_constraintBottom_toTopOf="@+id/btn_editEvent"
+        app:layout_constraintEnd_toEndOf="@+id/btn_editEvent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
