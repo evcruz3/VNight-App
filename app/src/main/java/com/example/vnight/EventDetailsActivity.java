@@ -49,6 +49,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
     HashMap<String, String> event;
     TextView eventName, eventDate, eventLocation, eventTimeStart, eventTimeEnd, eventParticipants, reservationOn;
     Boolean isEventOpen;
+    ArrayList<HashMap<String, String>> reservedPlayers;
 //    SharedPreferences sp;
 //    SharedPreferences.Editor sp_editor;
 
@@ -213,7 +214,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 
         if(v == btn_openDrafter){
             Intent intent = new Intent(EventDetailsActivity.this, TeamDrafterActivity.class);
-            intent.putExtra("eventsList", eventsList);
+            intent.putExtra("reservedPlayers", reservedPlayers);
             startActivity(intent);
         }
     }
@@ -495,6 +496,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                     reservedPlayersAdapter = new ReservedPlayersAdapter(ctx, list);
                     mRecyclerView.setAdapter(reservedPlayersAdapter);
                     mRecyclerView.setLayoutManager(new GridLayoutManager(ctx,4));
+                    reservedPlayers = list;
                     //AdminHomeActivity.this.finish();
                 }
             }

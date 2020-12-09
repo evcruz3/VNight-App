@@ -14,6 +14,8 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vnight.R;
+import com.example.vnight.customClasses.DragData;
+import com.example.vnight.customClasses.UserInfo;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ public class ReservedPlayersAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 //        }
 //    }
 
-    private class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView rName, rPosition;
         private final ImageView rAvatar;
 
@@ -58,6 +60,14 @@ public class ReservedPlayersAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             rName = itemView.findViewById(R.id.tv_name);
             rPosition = itemView.findViewById(R.id.tv_position);
             rAvatar = itemView.findViewById(R.id.imageView);
+        }
+
+        public String getPlayerName(){
+            return rName.getText().toString();
+        }
+
+        public String getPlayerPosition(){
+            return rPosition.getText().toString();
         }
     }
 
@@ -73,8 +83,24 @@ public class ReservedPlayersAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 final HashMap<String, String> player = playersList.get(holder.getAdapterPosition());
                 //final DragData state = new DragData(item, shape.getWidth(), shape.getHeight());
                 final View.DragShadowBuilder shadow = new View.DragShadowBuilder(view);
+                HashMap<String, String> playerInfo = usersDatabase.getOrDefault((player.get("userID")), null);
+                UserInfo playerData;
 
-                ViewCompat.startDragAndDrop(view, null, shadow, player, 0);
+                if(playerInfo != null) {
+                    playerData = new UserInfo(
+                            Integer.valueOf(playerInfo.get("entryID")),
+                            playerInfo.get("firstName"),
+                            playerInfo.get("lastName"),
+                            Integer.valueOf(playerInfo.get("batch")),
+                            playerInfo.get("contactNum"),
+                            playerInfo.get("username"));
+                }
+                else{
+                    playerData = new UserInfo(-1, holder.rName.getText().toString(), "", -1, "", "");
+                }
+
+                DragData data = new DragData(playerData, player.get("position"));
+                ViewCompat.startDragAndDrop(view, null, shadow, data, 0);
                 return true;
             }
         });
