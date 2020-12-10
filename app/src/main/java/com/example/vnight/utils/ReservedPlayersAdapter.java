@@ -83,24 +83,24 @@ public class ReservedPlayersAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 final HashMap<String, String> player = playersList.get(holder.getAdapterPosition());
                 //final DragData state = new DragData(item, shape.getWidth(), shape.getHeight());
                 final View.DragShadowBuilder shadow = new View.DragShadowBuilder(view);
-                HashMap<String, String> playerInfo = usersDatabase.getOrDefault((player.get("userID")), null);
-                UserInfo playerData;
-
-                if(playerInfo != null) {
-                    playerData = new UserInfo(
-                            Integer.valueOf(playerInfo.get("entryID")),
-                            playerInfo.get("firstName"),
-                            playerInfo.get("lastName"),
-                            Integer.valueOf(playerInfo.get("batch")),
-                            playerInfo.get("contactNum"),
-                            playerInfo.get("username"));
-                }
-                else{
-                    playerData = new UserInfo(-1, holder.rName.getText().toString(), "", -1, "", "");
-                }
-
-                DragData data = new DragData(playerData, player.get("position"));
-                ViewCompat.startDragAndDrop(view, null, shadow, data, 0);
+//                HashMap<String, String> playerInfo = usersDatabase.getOrDefault((player.get("userID")), null);
+//                UserInfo playerData;
+//
+//                if(playerInfo != null) {
+//                    playerData = new UserInfo(
+//                            Integer.valueOf(playerInfo.get("entryID")),
+//                            playerInfo.get("firstName"),
+//                            playerInfo.get("lastName"),
+//                            Integer.valueOf(playerInfo.get("batch")),
+//                            playerInfo.get("contactNum"),
+//                            playerInfo.get("username"));
+//                }
+//                else{
+//                    playerData = new UserInfo(-1, holder.rName.getText().toString(), "", -1, "", "");
+//                }
+//
+//                DragData data = new DragData(playerData, player.get("position"));
+                ViewCompat.startDragAndDrop(view, null, shadow, player, 0);
                 return true;
             }
         });

@@ -2,22 +2,31 @@ package com.example.vnight.utils;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.example.vnight.R;
-import com.example.vnight.customClasses.ParentItem;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ParentItemAdapter
         extends RecyclerView
         .Adapter<ParentItemAdapter.ParentViewHolder> {
+
+    Context context;
+    ChildItemAdapter.ChildItemOnDragListener childOnDragListener;
+    ParentItemOnDragListener parentItemOnDragListener;
+
+    public interface ParentItemOnDragListener{
+        boolean onDrag(View view, DragEvent dragEvent, int position);
+    }
 
     // An object of RecyclerView.RecycledViewPool
     // is created to share the Views
@@ -27,11 +36,15 @@ public class ParentItemAdapter
             viewPool
             = new RecyclerView
             .RecycledViewPool();
-    private List<ParentItem> itemList;
+    //private List<ParentItem> itemList;
+    private ArrayList<HashMap<String,String>> itemList;
 
-    public ParentItemAdapter(List<ParentItem> itemList)
+    public ParentItemAdapter(Context context, ParentItemOnDragListener parentItemOnDragListener, ChildItemAdapter.ChildItemOnDragListener childOnDragListener, ArrayList<HashMap<String,String>> itemList)
     {
         this.itemList = itemList;
+        this.context = context;
+        this.parentItemOnDragListener = parentItemOnDragListener;
+        this.childOnDragListener = childOnDragListener;
     }
 
     @NonNull
@@ -55,20 +68,23 @@ public class ParentItemAdapter
     @Override
     public void onBindViewHolder(
             @NonNull ParentViewHolder parentViewHolder,
-            int position)
+            final int position)
     {
 
         // Create an instance of the ParentItem
         // class for the given position
-        ParentItem parentItem
-                = itemList.get(position);
+//        ParentItem parentItem = itemList.get(position);
+
+        HashMap<String,String> parentItem = itemList.get(position);
 
         // For the created instance,
         // get the title and set it
         // as the text for the TextView
-        parentViewHolder
-                .ParentItemTitle
-                .setText(parentItem.getParentItemTitle());
+//        parentViewHolder
+//                .ParentItemTitle
+//                .setText(parentItem.getParentItemTitle());
+
+        parentViewHolder.ParentItemTitle.setText("Team " + String.valueOf(position + 1));
 
         // Create a layout manager
         // to assign a layout
@@ -91,19 +107,24 @@ public class ParentItemAdapter
         // child RecyclerView is nested
         // inside the parent RecyclerView,
         // we use the following method
-        layoutManager
-                .setInitialPrefetchItemCount(
-                        parentItem
-                                .getChildItemList()
-                                .size());
+//        layoutManager
+//            .setInitialPrefetchItemCount(
+//                    parentItem
+//                            .getChildItemList()
+//                            .size());
+
+        layoutManager.setInitialPrefetchItemCount(parentItem.size() - 1); // minus 1 since each parent item contain an extra key "teamID" that will not be displayed"
 
         // Create an instance of the child
         // item view adapter and set its
         // adapter, layout manager and RecyclerViewPool
-        ChildItemAdapter childItemAdapter
-                = new ChildItemAdapter(
-                parentItem
-                        .getChildItemList());
+//        ChildItemAdapter childItemAdapter
+//                = new ChildItemAdapter(
+//                parentItem
+//                        .getChildItemList());
+
+        //parentItem.remove("teamID");
+        ChildItemAdapter childItemAdapter = new ChildItemAdapter(context, childOnDragListener, parentItem);
         parentViewHolder
                 .ChildRecyclerView
                 .setLayoutManager(layoutManager);
@@ -113,6 +134,12 @@ public class ParentItemAdapter
         parentViewHolder
                 .ChildRecyclerView
                 .setRecycledViewPool(viewPool);
+        parentViewHolder.itemView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+                return parentItemOnDragListener.onDrag(view, dragEvent, position);
+            }
+        });
     }
 
     // This method returns the number

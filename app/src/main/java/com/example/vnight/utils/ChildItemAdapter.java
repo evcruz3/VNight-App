@@ -4,32 +4,47 @@ package com.example.vnight.utils;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.Color;
+import android.content.Context;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.vnight.R;
-import com.example.vnight.customClasses.ChildItem;
-import com.example.vnight.customClasses.DragData;
 import com.example.vnight.customClasses.UserInfo;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class ChildItemAdapter
         extends RecyclerView
         .Adapter<ChildItemAdapter.ChildViewHolder> {
 
-    private List<ChildItem> ChildItemList;
+    //private List<ChildItem> ChildItemList;
+    public static HashMap<Integer, String> Positions;
+    private HashMap<String, String> ChildItemList;
+    private final HashMap<String,HashMap<String,String>> usersDatabase;
+    private ChildItemOnDragListener mChildItemOnDragListener;
 
+    public interface ChildItemOnDragListener{
+        boolean onDrag(View view, DragEvent dragEvent, int position);
+    }
     // Constuctor
-    ChildItemAdapter(List<ChildItem> childItemList)
+    ChildItemAdapter(Context context, ChildItemOnDragListener mChildItemOnDragListener, HashMap<String, String> childItemList)
     {
         this.ChildItemList = childItemList;
+        Positions = new HashMap<Integer, String>();
+        Positions.put(0, "wing1");
+        Positions.put(1, "mid1");
+        Positions.put(2, "setter");
+        Positions.put(3, "wing2");
+        Positions.put(4, "mid2");
+        Positions.put(5, "wing3");
+        Positions.put(6, "other");
+        TypeToken<HashMap<String,HashMap<String,String>>> token = new TypeToken<HashMap<String,HashMap<String,String>>>(){};
+        this.usersDatabase = SharedPreferenceHandler.getSavedObjectFromPreference(context, "UsersDatabase", "users", token.getType());
+        this.mChildItemOnDragListener = mChildItemOnDragListener;
     }
 
     @NonNull
@@ -53,70 +68,46 @@ public class ChildItemAdapter
     @Override
     public void onBindViewHolder(
             @NonNull final ChildViewHolder childViewHolder,
-            int position)
+            final int position)
     {
 
         // Create an instance of the ChildItem
         // class for the given position
-        final ChildItem childItem
-                = ChildItemList.get(position);
+//        final ChildItem childItem
+//                = ChildItemList.get(position);
 
         // For the created instance, set title.
         // No need to set the image for
         // the ImageViews because we have
         // provided the source for the images
         // in the layout file itself
-        childViewHolder
-                .ChildItemTitle
-                .setText(childItem.getChildItemTitle());
 
-        if(childItem.getPlayerInfo() == null) {
+        final String positionTitle = Positions.get(position);
+        final String childItem = ChildItemList.getOrDefault(positionTitle, null);
+
+        if(childItem == null){
+            childViewHolder.ChildItemTitle.setText(positionTitle); // empty position slot
             childViewHolder.itemView.setAlpha(new Float(0.5));
         }
         else{
+            HashMap<String, String> playerInfo = usersDatabase.getOrDefault(childItem, null);
+            UserInfo playerData;
+
+            if(playerInfo != null) {
+                childViewHolder.ChildItemTitle.setText(playerInfo.get("firstName")); // Registered player
+            }
+            else{
+                childViewHolder.ChildItemTitle.setText(childItem); // Guest
+            }
+
             childViewHolder.itemView.setAlpha(new Float(1));
         }
 
+        //childViewHolder.itemView.setOnDragListener(this.onDragListener);
         childViewHolder.itemView.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
-                switch (dragEvent.getAction()) {
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        view.setBackgroundColor(Color.GREEN);
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        view.setBackgroundColor(Color.WHITE);
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        view.setBackgroundColor(Color.WHITE);
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        //  final float dropX = dragEvent.getX();
-                        //  final float dropY = dragEvent.getY();
-                        DragData data = (DragData) dragEvent.getLocalState();
-                        String requiredPosition = childItem.getRequiredPosition();
-
-                        if(requiredPosition != null) {
-                            if(requiredPosition.compareTo(data.getPlayerPosition()) == 0){
-                                childItem.setPlayerInfo(data.getUserInfo());
-                                childItem.setChildItemTitle(data.getUserInfo().getFirstName());
-                                childViewHolder.ChildItemTitle.setText(data.getUserInfo().getFirstName());
-                                childViewHolder.itemView.setAlpha(new Float(1));
-                            }
-                            else{
-//                                Toast.makeText(this, "Position mismatched", Toast.LENGTH_LONG).show();
-                                break;
-                            }
-                        }
-                        else{
-                            childItem.setChildItemTitle(data.getUserInfo().getFirstName());
-                            childViewHolder.ChildItemTitle.setText(data.getUserInfo().getFirstName());
-                        }
-
-                    default:
-                        break;
-                }
-                return true;
+                return mChildItemOnDragListener.onDrag(view, dragEvent, position);
             }
         });
     }
