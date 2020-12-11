@@ -215,6 +215,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
         if(v == btn_openDrafter){
             Intent intent = new Intent(EventDetailsActivity.this, TeamDrafterActivity.class);
             intent.putExtra("reservedPlayers", reservedPlayers);
+            intent.putExtra("event", event);
             startActivity(intent);
         }
     }

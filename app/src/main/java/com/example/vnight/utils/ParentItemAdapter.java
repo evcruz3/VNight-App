@@ -12,17 +12,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.vnight.R;
+import com.example.vnight.teamDrafter.TeamItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ParentItemAdapter
         extends RecyclerView
         .Adapter<ParentItemAdapter.ParentViewHolder> {
 
     Context context;
-    ChildItemAdapter.ChildItemOnDragListener childOnDragListener;
+    ChildItemAdapter.ChildItemOnDropListener childItemOnDropListener;
+    ChildItemAdapter.ChildItemOnDoubleClickListener mChildItemOnDoubleClickListener;
     ParentItemOnDragListener parentItemOnDragListener;
+    List<TeamItem> teamList;
 
     public interface ParentItemOnDragListener{
         boolean onDrag(View view, DragEvent dragEvent, int position);
@@ -37,14 +41,16 @@ public class ParentItemAdapter
             = new RecyclerView
             .RecycledViewPool();
     //private List<ParentItem> itemList;
-    private ArrayList<HashMap<String,String>> itemList;
+    //private ArrayList<HashMap<String,String>> itemList;
 
-    public ParentItemAdapter(Context context, ParentItemOnDragListener parentItemOnDragListener, ChildItemAdapter.ChildItemOnDragListener childOnDragListener, ArrayList<HashMap<String,String>> itemList)
+    public ParentItemAdapter(Context context, ParentItemOnDragListener parentItemOnDragListener, ChildItemAdapter.ChildItemOnDoubleClickListener mChildItemOnDoubleClickListener, ChildItemAdapter.ChildItemOnDropListener childItemOnDropListener, List<TeamItem> teamList)
     {
-        this.itemList = itemList;
+//        this.itemList = itemList;
+        this.teamList = teamList;
         this.context = context;
         this.parentItemOnDragListener = parentItemOnDragListener;
-        this.childOnDragListener = childOnDragListener;
+        this.childItemOnDropListener = childItemOnDropListener;
+        this.mChildItemOnDoubleClickListener = mChildItemOnDoubleClickListener;
     }
 
     @NonNull
@@ -75,7 +81,8 @@ public class ParentItemAdapter
         // class for the given position
 //        ParentItem parentItem = itemList.get(position);
 
-        HashMap<String,String> parentItem = itemList.get(position);
+//        HashMap<String,String> parentItem = itemList.get(position);
+        TeamItem team = teamList.get(position);
 
         // For the created instance,
         // get the title and set it
@@ -84,7 +91,7 @@ public class ParentItemAdapter
 //                .ParentItemTitle
 //                .setText(parentItem.getParentItemTitle());
 
-        parentViewHolder.ParentItemTitle.setText("Team " + String.valueOf(position + 1));
+        parentViewHolder.ParentItemTitle.setText(team.gettitle());
 
         // Create a layout manager
         // to assign a layout
@@ -113,7 +120,7 @@ public class ParentItemAdapter
 //                            .getChildItemList()
 //                            .size());
 
-        layoutManager.setInitialPrefetchItemCount(parentItem.size() - 1); // minus 1 since each parent item contain an extra key "teamID" that will not be displayed"
+        layoutManager.setInitialPrefetchItemCount(team.getSlotItemList().size()); // minus 1 since each parent item contain an extra key "teamID" that will not be displayed"
 
         // Create an instance of the child
         // item view adapter and set its
@@ -124,7 +131,7 @@ public class ParentItemAdapter
 //                        .getChildItemList());
 
         //parentItem.remove("teamID");
-        ChildItemAdapter childItemAdapter = new ChildItemAdapter(context, childOnDragListener, parentItem);
+        ChildItemAdapter childItemAdapter = new ChildItemAdapter(context, mChildItemOnDoubleClickListener, childItemOnDropListener, team.getSlotItemList(), position);
         parentViewHolder
                 .ChildRecyclerView
                 .setLayoutManager(layoutManager);
@@ -151,7 +158,7 @@ public class ParentItemAdapter
     public int getItemCount()
     {
 
-        return itemList.size();
+        return teamList.size();
     }
 
     // This class is to initialize

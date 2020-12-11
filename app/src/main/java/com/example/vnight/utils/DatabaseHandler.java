@@ -12,6 +12,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.vnight.AdminHomeActivity;
@@ -30,7 +31,7 @@ final public class DatabaseHandler {
     final static public String EVENTS_SHEET_NAME = "events";
     //final static public String reservationListSheetName = "reservationList";
     final static public int    socketTimeOut = 50000;
-    final static public double APP_VERSION = 0.20201201;
+    final static public double APP_VERSION = 0.20201211;
     final static public String APP_NOT_SUPPORTED = "-3";
 
 

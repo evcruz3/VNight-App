@@ -18,9 +18,6 @@ import com.example.vnight.utils.SharedPreferenceHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 
 public class EditUserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -56,7 +53,7 @@ public class EditUserInfoActivity extends AppCompatActivity implements View.OnCl
         editTextContactNumber = (EditText)findViewById(R.id.et_contactNum);
         editTextPassword = (EditText)findViewById(R.id.et_password);
         editTextPasswordRetype = (EditText)findViewById(R.id.et_passwordRetype);
-        buttonSubmit = (Button)findViewById(R.id.btn_submit);
+        buttonSubmit = (Button)findViewById(R.id.btn_submitDraft);
         editTextUsername = (EditText)findViewById(R.id.et_username);
         buttonSubmit.setOnClickListener(this);
 
