@@ -229,7 +229,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
 
         final LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.reserveDialog);
         final Spinner spinnerPosition = (Spinner)view.findViewById(R.id.dialog_spinnerPosition);
-        final EditText guestName = (EditText)view.findViewById(R.id.et_guestName);
+//        final EditText guestName = (EditText)view.findViewById(R.id.et_guestName);
 
         List<String> positions = new ArrayList<String>();
         positions.add("Wing");
@@ -249,20 +249,22 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                 Map<String, String> params = new HashMap<>();
                 String userID;
 
-                String gName = guestName.getText().toString().trim();
-                if(gName.isEmpty()){
-                    userID = ""+userInfo.getEntryID();
-//                    firstName = playerName;
-                }
-                else {
-                    userID = gName;
-//                    lastName = "("+playerName+"'s Guest)";
-                }
+//                String gName = guestName.getText().toString().trim();
+//                if(gName.isEmpty()){
+//                    userID = ""+userInfo.getEntryID();
+////                    firstName = playerName;
+//                }
+//                else {
+//                    userID = gName;
+////                    lastName = "("+playerName+"'s Guest)";
+//                }
+                userID = ""+userInfo.getEntryID();
                 params.put("userID", userID);
                 //params.put("lastName", lastName);
                 params.put("position", spinnerPosition.getSelectedItem().toString().trim());
 
-                final String reservedName = gName.isEmpty() ? userInfo.getFirstName() : userID;
+//                final String reservedName = gName.isEmpty() ? userInfo.getFirstName() : userID;
+                final String reservedName = userInfo.getFirstName();
 
                 DatabaseHandler.doActionToSheet(ctx, event.get("key"), "reserveSlot", params, new DatabaseHandler.onResponseListener(){
                     @Override
@@ -270,7 +272,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                         if(response.compareTo(DatabaseHandler.WriteReturnCodes.ROW_WRITE_SUCCESS) == 0)
                             Toast.makeText(EventDetailsActivity.this, "Reservation for "+reservedName+" successful", Toast.LENGTH_LONG).show();
                         else if (response.compareTo(DatabaseHandler.WriteReturnCodes.DUPLICATE_KEY_DETECTED) == 0){
-                            Toast.makeText(EventDetailsActivity.this, "You've already made a reservation for " + reservedName, Toast.LENGTH_LONG).show();
+                            Toast.makeText(EventDetailsActivity.this, "You've already made a reservation for this event", Toast.LENGTH_LONG).show();
                         }
                         else{
                             Toast.makeText(EventDetailsActivity.this, response, Toast.LENGTH_LONG).show();

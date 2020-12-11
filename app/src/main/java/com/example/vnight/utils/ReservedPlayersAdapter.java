@@ -131,7 +131,7 @@ public class ReservedPlayersAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 //        Log.d(TAG, playerInfo.get("UserID"));
 
         if(playerInfo == null){
-            rName = player.get("userID") + " (G)";
+            rName = player.get("unknown user");
         }
         else{
             rName = playerInfo.get("firstName") + " " + playerInfo.get("lastName");

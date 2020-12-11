@@ -9,6 +9,7 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.vnight.R;
@@ -97,7 +98,7 @@ public class ChildItemAdapter
                 childViewHolder.ChildItemTitle.setText(playerInfo.get("firstName")); // Registered player
             }
             else{
-                childViewHolder.ChildItemTitle.setText(childItem); // Guest
+                childViewHolder.ChildItemTitle.setText("unknown user"); // Guest
             }
 
             childViewHolder.itemView.setAlpha(new Float(1));
@@ -110,6 +111,28 @@ public class ChildItemAdapter
                 return mChildItemOnDragListener.onDrag(view, dragEvent, position);
             }
         });
+
+        childViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(childItem != null) {
+                    childViewHolder.DeleteEntry.setVisibility(View.VISIBLE);
+                }
+                return false;
+            }
+        });
+
+        childViewHolder.itemView.setFocusableInTouchMode(true);
+
+        childViewHolder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b == false){
+                    childViewHolder.DeleteEntry.setVisibility(View.GONE);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -132,6 +155,7 @@ public class ChildItemAdapter
             extends RecyclerView.ViewHolder {
 
         TextView ChildItemTitle;
+        Button DeleteEntry;
 
         ChildViewHolder(View itemView)
         {
@@ -139,6 +163,7 @@ public class ChildItemAdapter
             ChildItemTitle
                     = itemView.findViewById(
                     R.id.child_item_title);
+            DeleteEntry = itemView.findViewById(R.id.btn_delete);
         }
     }
 }

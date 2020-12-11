@@ -41,6 +41,7 @@ public class TeamDrafterActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.team_drafter_actvitiy);
+
         ctx = this;
         currTeamIndex = 0;
 
