@@ -17,6 +17,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.vnight.utils.DatabaseHandler;
 import com.example.vnight.utils.SharedPreferenceHandler;
+import com.example.vnight.utils.UsersDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -97,6 +98,7 @@ public class UsersDatabaseService extends JobService {
                                             if((localChangeID == null) || (serverChangeID > localChangeID.intValue())){
                                                 SharedPreferenceHandler.saveObjectToSharedPreference(ctx, "UsersDatabase", "users", list);
                                                 SharedPreferenceHandler.saveObjectToSharedPreference(ctx, "UsersDatabase", "changeID", serverChangeID);
+//                                                UsersDatabase.setUsersDatabase(list);
                                             }
 
                                             Log.d(TAG, "Job finished");

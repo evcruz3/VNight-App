@@ -155,7 +155,7 @@ public class TeamDrafterActivity
             @Override
             public boolean onDoubleClick(HashMap<String, String> playerInfo, int teamID, String slotID) {
                 Toast.makeText(ctx, "Remove slot detected", Toast.LENGTH_LONG).show();
-                teamComposition.get(teamID).put(slotID, null);
+                teamComposition.get(teamID-1).put(slotID, null);
                 parentItemAdapter.notifyDataSetChanged();
                 reservedPlayers.add(playerInfo);
                 reservedPlayersAdapter.notifyDataSetChanged();
@@ -164,7 +164,10 @@ public class TeamDrafterActivity
         };
 
 
-        parentItemAdapter = new ParentItemAdapter(ctx, parentItemOnDragListener, mChildItemOnDoubleClickListener, childItemOnDropListener, teamList);
+        parentItemAdapter = new ParentItemAdapter(ctx, teamList);
+        parentItemAdapter.setChildItemOnDoubleClickListener(mChildItemOnDoubleClickListener);
+        parentItemAdapter.setChildItemOnDropListener(childItemOnDropListener);
+        parentItemAdapter.setParentItemOnDragListener(parentItemOnDragListener);
 
         // Set the layout manager
         // and adapter for items
@@ -176,30 +179,6 @@ public class TeamDrafterActivity
         snapHelper.attachToRecyclerView(ParentRecyclerViewItem);
 
     }
-
-//    private void processInsertion(HashMap<String,String> player, String slot, String position){
-//        if(player.get("position").compareTo(position) == 0){
-//            String oldPlayer = teamComposition.get(currTeamIndex).get(slot);
-//
-//            if(oldPlayer != null){
-//                HashMap<String, String> oldData = new HashMap<>();
-//                oldData.put("userID", oldPlayer);
-//                oldData.put("position", position);
-//
-//                reservedPlayers.add(oldData);
-//
-//                teamComposition.get(currTeamIndex).put(slot, player.get("userID"));
-//                parentItemAdapter.notifyDataSetChanged();
-//                reservedPlayers.remove(player);
-//                reservedPlayersAdapter.notifyDataSetChanged();
-//            }else {
-//                teamComposition.get(currTeamIndex).put(slot, player.get("userID"));
-//                parentItemAdapter.notifyDataSetChanged();
-//                reservedPlayers.remove(player);
-//                reservedPlayersAdapter.notifyDataSetChanged();
-//            }
-//        }
-//    }
 
     @Override
     public void onClick(View view) {
@@ -214,25 +193,27 @@ public class TeamDrafterActivity
     }
 
     private void addNewParentItem(int id) {
-        TeamItem team = new TeamItem(String.valueOf(id), slotItemList());
+        // objects
+        TeamItem team = new TeamItem(id, String.valueOf(id));
         teamList.add(team);
 
+        // hashmap
         teamComposition.add(ChildItemList(id));
     }
 
-    private List<SlotItem> slotItemList() {
-        List<SlotItem> slotItemList = new ArrayList<>();
-
-        slotItemList.add(new SlotItem(SlotItem.ID_WING1));
-        slotItemList.add(new SlotItem(SlotItem.ID_MID1));
-        slotItemList.add(new SlotItem(SlotItem.ID_SETTER));
-        slotItemList.add(new SlotItem(SlotItem.ID_WING2));
-        slotItemList.add(new SlotItem(SlotItem.ID_MID2));
-        slotItemList.add(new SlotItem(SlotItem.ID_WING3));
-        slotItemList.add(new SlotItem(SlotItem.ID_LIBERO));
-
-        return slotItemList;
-    }
+//    private List<SlotItem> slotItemList() {
+//        List<SlotItem> slotItemList = new ArrayList<>();
+//
+//        slotItemList.add(new SlotItem(SlotItem.ID_WING1));
+//        slotItemList.add(new SlotItem(SlotItem.ID_MID1));
+//        slotItemList.add(new SlotItem(SlotItem.ID_SETTER));
+//        slotItemList.add(new SlotItem(SlotItem.ID_WING2));
+//        slotItemList.add(new SlotItem(SlotItem.ID_MID2));
+//        slotItemList.add(new SlotItem(SlotItem.ID_WING3));
+//        slotItemList.add(new SlotItem(SlotItem.ID_LIBERO));
+//
+//        return slotItemList;
+//    }
 
     // Method to pass the arguments
     // for the elements

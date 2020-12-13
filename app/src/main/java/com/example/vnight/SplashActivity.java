@@ -28,6 +28,7 @@ import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.services.UsersDatabaseService;
 import com.example.vnight.utils.DatabaseHandler;
 import com.example.vnight.utils.SharedPreferenceHandler;
+import com.example.vnight.utils.UsersDatabase;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
@@ -132,6 +133,8 @@ public class SplashActivity extends AppCompatActivity {
                                     SharedPreferenceHandler.saveObjectToSharedPreference(ctx, "UsersDatabase", "users", list);
                                     SharedPreferenceHandler.saveObjectToSharedPreference(ctx, "UsersDatabase", "changeID", serverChangeID);
 
+//                                    UsersDatabase.setUsersDatabase(list);
+
                                     checkUserInfo();
                                     //}
 
@@ -163,6 +166,7 @@ public class SplashActivity extends AppCompatActivity {
             UsersDatabaseService.addRequestToQueue(ctx, stringRequest);
         }
         else {
+//            UsersDatabase.setUsersDatabase(usersDatabase);
             checkUserInfo();
         }
 

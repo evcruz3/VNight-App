@@ -25,22 +25,31 @@ import com.example.vnight.teamDrafter.SlotItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChildItemAdapter
         extends RecyclerView
         .Adapter<ChildItemAdapter.ChildViewHolder> {
 
-    //private List<ChildItem> ChildItemList;
     private static final String TAG = "ChildItemAdapter";
-    public static HashMap<Integer, String> Positions;
-    //private HashMap<String, String> ChildItemList;
+
+//    public static final Map<Integer, String> Positions = createMap();
+
+
+
     private List<SlotItem> slotList;
-    private final HashMap<String,HashMap<String,String>> usersDatabase;
+
+    // NOTE: The static user mapping is updated everytime a new instance of the adapter is made.
+    // It this a good design?
+    private static HashMap<String,HashMap<String,String>> usersDatabase;
+
+
     private ChildItemOnDropListener mChildItemOnDropListener;
     private ChildItemOnDoubleClickListener mChildItemOnDoubleClickListener;
-    private int teamID;
+    //private int teamID;
 
     public interface ChildItemOnDropListener{
         boolean DROP_SUCCESS = true;
@@ -51,26 +60,25 @@ public class ChildItemAdapter
     }
 
     public interface ChildItemOnDoubleClickListener{
-
         boolean onDoubleClick(HashMap<String,String> playerInfo, int teamID,String slotID );
     }
+
+    public void setChildItemOnDropListener(ChildItemOnDropListener mChildItemOnDropListener){
+        this.mChildItemOnDropListener = mChildItemOnDropListener;
+    }
+
+    public void setChildItemOnDoubleClickListener(ChildItemOnDoubleClickListener mChildItemOnDoubleClickListener){
+        this.mChildItemOnDoubleClickListener = mChildItemOnDoubleClickListener;
+    }
+
     // Constuctor
-    ChildItemAdapter(Context context, ChildItemOnDoubleClickListener mChildItemOnDoubleClickListener, ChildItemOnDropListener mChildItemOnDropListener, List<SlotItem> slotList, int teamID)
+    ChildItemAdapter(Context context, List<SlotItem> slotList)
     {
         this.slotList = slotList;
-        Positions = new HashMap<Integer, String>();
-        Positions.put(0, "wing1");
-        Positions.put(1, "mid1");
-        Positions.put(2, "setter");
-        Positions.put(3, "wing2");
-        Positions.put(4, "mid2");
-        Positions.put(5, "wing3");
-        Positions.put(6, "libero");
+
         TypeToken<HashMap<String,HashMap<String,String>>> token = new TypeToken<HashMap<String,HashMap<String,String>>>(){};
         this.usersDatabase = SharedPreferenceHandler.getSavedObjectFromPreference(context, "UsersDatabase", "users", token.getType());
-        this.mChildItemOnDropListener = mChildItemOnDropListener;
-        this.mChildItemOnDoubleClickListener = mChildItemOnDoubleClickListener;
-        this.teamID = teamID;
+        //this.teamID = teamID;
     }
 
     @NonNull
@@ -134,100 +142,74 @@ public class ChildItemAdapter
 
         //childViewHolder.itemView.setOnDragListener(this.onDragListener);
 
+        if(mChildItemOnDropListener != null){
+            childViewHolder.itemView.setOnDragListener(new View.OnDragListener() {
+                @Override
+                public boolean onDrag(View view, DragEvent dragEvent) {
+                    switch (dragEvent.getAction()) {
+                        case DragEvent.ACTION_DRAG_ENTERED:
+                            view.setBackgroundColor(Color.GREEN);
+                            break;
+                        case DragEvent.ACTION_DRAG_EXITED:
+                            view.setBackgroundColor(Color.WHITE);
+                            break;
+                        case DragEvent.ACTION_DRAG_ENDED:
+                            view.setBackgroundColor(Color.WHITE);
+                            break;
+                        case DragEvent.ACTION_DROP:
+                            HashMap<String,String> previousPlayer = slot.getPlayerInfo();
+                            String requiredRole = slot.getRole();
+                            HashMap<String,String> pendingPlayer = (HashMap<String,String>) dragEvent.getLocalState();
 
-        childViewHolder.itemView.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                switch (dragEvent.getAction()) {
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        view.setBackgroundColor(Color.GREEN);
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        view.setBackgroundColor(Color.WHITE);
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        view.setBackgroundColor(Color.WHITE);
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        HashMap<String,String> previousPlayer = slot.getPlayerInfo();
-                        String requiredRole = slot.getRole();
-                        HashMap<String,String> pendingPlayer = (HashMap<String,String>) dragEvent.getLocalState();
-
-                        if(requiredRole.compareTo(pendingPlayer.get("position")) == 0){
-                            if(previousPlayer != null){
-                                if(mChildItemOnDropListener.onDropSlotIsNotEmpty(previousPlayer, pendingPlayer, slot.getId()) == mChildItemOnDropListener.DROP_SUCCESS){
-                                    slot.setPlayerInfo(pendingPlayer);
+                            if(requiredRole.compareTo(pendingPlayer.get("position")) == 0){
+                                if(previousPlayer != null){
+                                    if(mChildItemOnDropListener.onDropSlotIsNotEmpty(previousPlayer, pendingPlayer, slot.getId()) == mChildItemOnDropListener.DROP_SUCCESS){
+                                        slot.setPlayerInfo(pendingPlayer);
+                                    }
+                                }else{
+                                    if(mChildItemOnDropListener.onDropSlotIsEmpty(pendingPlayer, slot.getId()) == mChildItemOnDropListener.DROP_SUCCESS){
+                                        slot.setPlayerInfo(pendingPlayer);
+                                    }
                                 }
                             }else{
-                                if(mChildItemOnDropListener.onDropSlotIsEmpty(pendingPlayer, slot.getId()) == mChildItemOnDropListener.DROP_SUCCESS){
-                                    slot.setPlayerInfo(pendingPlayer);
-                                }
+                                // Do Nothing
                             }
-                        }else{
-                            // Do Nothing
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-
-                //slot.setPlayerInfo((HashMap<String,String>) dragEvent.getLocalState());
-                //return mChildItemOnDropListener.onDrag(view, dragEvent, position);
-                return true;
-            }
-        });
-
-//        childViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View view) {
-//                if(slot != null) {
-//                    childViewHolder.DeleteEntry.setVisibility(View.VISIBLE);
-//                }
-//                return false;
-//            }
-//        });
-
-//        childViewHolder.itemView.setFocusableInTouchMode(true);
-//
-//        childViewHolder.itemView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                if(b == false){
-//                    childViewHolder.DeleteEntry.setVisibility(View.GONE);
-//                }
-//            }
-//        });
-
-//        childViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                mChildItemOnDoubleClickListener.onClickDelete(view, position);
-//            }
-//        });
-
-
-        childViewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
-
-            long prev_clickTime = 0;
-
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                long timestamp = motionEvent.getEventTime();
-                long duration = timestamp - prev_clickTime;
-                //Log.d(TAG, "ActionID: " + String.valueOf(motionEvent.getAction()) + " Duration: " + String.valueOf(duration));
-                if(duration < 500){
-                    Log.d(TAG, "double tapped");
-                    if(playerInfo != null){
-                        mChildItemOnDoubleClickListener.onDoubleClick(playerInfo,teamID,slot.getId());
-                        slot.setPlayerInfo(null);
+                            break;
+                        default:
+                            break;
                     }
 
+
+                    //slot.setPlayerInfo((HashMap<String,String>) dragEvent.getLocalState());
+                    //return mChildItemOnDropListener.onDrag(view, dragEvent, position);
+                    return true;
                 }
-                prev_clickTime = timestamp;
-                return false;
-            }
-        });
+            });
+        }
+
+        if(mChildItemOnDoubleClickListener != null) {
+            childViewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
+
+                long prev_clickTime = 0;
+
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    long timestamp = motionEvent.getEventTime();
+                    long duration = timestamp - prev_clickTime;
+                    //Log.d(TAG, "ActionID: " + String.valueOf(motionEvent.getAction()) + " Duration: " + String.valueOf(duration));
+                    if (duration < 500) {
+                        Log.d(TAG, "double tapped");
+                        if (playerInfo != null) {
+                            mChildItemOnDoubleClickListener.onDoubleClick(playerInfo, slot.getTeamID(), slot.getId());
+                            slot.setPlayerInfo(null);
+                        }
+
+                    }
+                    prev_clickTime = timestamp;
+                    return false;
+                }
+            });
+        }
 
     }
 

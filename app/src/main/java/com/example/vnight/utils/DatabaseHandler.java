@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-final public class DatabaseHandler {
+public final class DatabaseHandler {
     final static public String databaseURL = "https://script.google.com/macros/s/AKfycbyNr3uVmGA7hHy5-XTgFyOm1BQ_uraabosBk65MURaBk51LFvM/exec";
     final static public String PLAYERS_SHEET_NAME = "Items";
     final static public String EVENTS_SHEET_NAME = "events";

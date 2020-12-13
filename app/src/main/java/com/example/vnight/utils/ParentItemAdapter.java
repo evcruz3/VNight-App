@@ -43,14 +43,23 @@ public class ParentItemAdapter
     //private List<ParentItem> itemList;
     //private ArrayList<HashMap<String,String>> itemList;
 
-    public ParentItemAdapter(Context context, ParentItemOnDragListener parentItemOnDragListener, ChildItemAdapter.ChildItemOnDoubleClickListener mChildItemOnDoubleClickListener, ChildItemAdapter.ChildItemOnDropListener childItemOnDropListener, List<TeamItem> teamList)
+    public ParentItemAdapter(Context context, List<TeamItem> teamList)
     {
 //        this.itemList = itemList;
         this.teamList = teamList;
         this.context = context;
-        this.parentItemOnDragListener = parentItemOnDragListener;
+    }
+
+    public void setChildItemOnDropListener(ChildItemAdapter.ChildItemOnDropListener childItemOnDropListener){
         this.childItemOnDropListener = childItemOnDropListener;
+    }
+
+    public void setChildItemOnDoubleClickListener(ChildItemAdapter.ChildItemOnDoubleClickListener mChildItemOnDoubleClickListener){
         this.mChildItemOnDoubleClickListener = mChildItemOnDoubleClickListener;
+    }
+
+    public void setParentItemOnDragListener(ParentItemOnDragListener parentItemOnDragListener){
+        this.parentItemOnDragListener = parentItemOnDragListener;
     }
 
     @NonNull
@@ -120,7 +129,7 @@ public class ParentItemAdapter
 //                            .getChildItemList()
 //                            .size());
 
-        layoutManager.setInitialPrefetchItemCount(team.getSlotItemList().size()); // minus 1 since each parent item contain an extra key "teamID" that will not be displayed"
+        layoutManager.setInitialPrefetchItemCount(team.getSlotItemList().size());
 
         // Create an instance of the child
         // item view adapter and set its
@@ -131,7 +140,13 @@ public class ParentItemAdapter
 //                        .getChildItemList());
 
         //parentItem.remove("teamID");
-        ChildItemAdapter childItemAdapter = new ChildItemAdapter(context, mChildItemOnDoubleClickListener, childItemOnDropListener, team.getSlotItemList(), position);
+        ChildItemAdapter childItemAdapter = new ChildItemAdapter(context,team.getSlotItemList());
+        if(childItemOnDropListener != null) {
+            childItemAdapter.setChildItemOnDropListener(childItemOnDropListener);
+        }
+        if(mChildItemOnDoubleClickListener != null) {
+            childItemAdapter.setChildItemOnDoubleClickListener(mChildItemOnDoubleClickListener);
+        }
         parentViewHolder
                 .ChildRecyclerView
                 .setLayoutManager(layoutManager);
@@ -141,12 +156,15 @@ public class ParentItemAdapter
         parentViewHolder
                 .ChildRecyclerView
                 .setRecycledViewPool(viewPool);
-        parentViewHolder.itemView.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                return parentItemOnDragListener.onDrag(view, dragEvent, position);
-            }
-        });
+
+        if(parentItemOnDragListener != null) {
+            parentViewHolder.itemView.setOnDragListener(new View.OnDragListener() {
+                @Override
+                public boolean onDrag(View view, DragEvent dragEvent) {
+                    return parentItemOnDragListener.onDrag(view, dragEvent, position);
+                }
+            });
+        }
     }
 
     // This method returns the number

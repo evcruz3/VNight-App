@@ -13,6 +13,7 @@ public class SlotItem {
     private String role; // "Wing"
     private HashMap<String, String> playerInfo;
         // KEYS: {"entryID", "userID", "position"}
+    private int teamID;
 
     public final static String ID_WING1 = "wing1";
     public final static String ID_WING2 = "wing2";
@@ -30,7 +31,7 @@ public class SlotItem {
 
     // Constructor of the class 
     // to initialize the variable* 
-    public SlotItem(@NonNull String id)
+    public SlotItem(@NonNull String id, @NonNull int teamID)
     {
         switch(id){
             case ID_WING1:
@@ -72,7 +73,7 @@ public class SlotItem {
                 throw new IllegalArgumentException("ID " + id + " not recognized");
         }
         this.playerInfo = null;
-
+        this.teamID = teamID;
     }
 
     // Getter and Setter method 
@@ -90,6 +91,10 @@ public class SlotItem {
 
     public String getId(){
         return this.id;
+    }
+
+    public int getTeamID(){
+        return this.teamID;
     }
 
     public void setPlayerInfo(HashMap<String, String> playerInfo){
