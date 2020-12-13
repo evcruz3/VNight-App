@@ -118,9 +118,9 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
             btn_actionButton.setText("Delete Event");
         }
         else{
-            btn_openDrafter.setVisibility(View.INVISIBLE);
+            btn_openDrafter.setVisibility(View.GONE);
             btn_openDrafter.setEnabled(false);
-            btn_editEvent.setVisibility(View.INVISIBLE);
+            btn_editEvent.setVisibility(View.GONE);
             btn_editEvent.setEnabled(false);
             btn_actionButton.setText("Reserve a Slot");
             btn_actionButton.setEnabled(isEventOpen);
@@ -498,7 +498,7 @@ public class EventDetailsActivity extends AppCompatActivity implements View.OnCl
                 else{
                     reservedPlayersAdapter = new ReservedPlayersAdapter(ctx, list);
                     mRecyclerView.setAdapter(reservedPlayersAdapter);
-                    mRecyclerView.setLayoutManager(new GridLayoutManager(ctx,4));
+                    mRecyclerView.setLayoutManager(new GridLayoutManager(ctx,3));
                     reservedPlayers = list;
                     //AdminHomeActivity.this.finish();
                 }

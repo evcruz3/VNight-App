@@ -96,54 +96,13 @@ public class ChildItemAdapter
                         R.layout.child_item,
                         viewGroup, false);
 
-        return new ChildViewHolder(view);
-    }
+        ChildViewHolder holder = new ChildViewHolder(view);
 
-    @Override
-    public void onBindViewHolder(
-            @NonNull final ChildViewHolder childViewHolder,
-            final int position)
-    {
-
-        // Create an instance of the ChildItem
-        // class for the given position
-//        final ChildItem childItem
-//                = ChildItemList.get(position);
-
-        // For the created instance, set title.
-        // No need to set the image for
-        // the ImageViews because we have
-        // provided the source for the images
-        // in the layout file itself
-
-        final SlotItem slot = slotList.get(position);
+        final SlotItem slot = slotList.get(holder.getAdapterPosition());
         final HashMap<String, String> playerInfo = slot.getPlayerInfo();
 
-//        final String positionTitle = Positions.get(position);
-//        final String childItem = ChildItemList.getOrDefault(positionTitle, null);
-
-        if(playerInfo == null){
-            childViewHolder.ChildItemTitle.setText(slot.getTitle()); // empty position slot
-            childViewHolder.itemView.setAlpha(new Float(0.5));
-        }
-        else{
-            //HashMap<String, String> playerInfo = usersDatabase.getOrDefault(childItem, null);
-            HashMap<String, String> playerData = usersDatabase.getOrDefault(playerInfo.get("userID"), null);
-
-            if(playerData != null) {
-                childViewHolder.ChildItemTitle.setText(playerData.get("firstName")); // Registered player
-            }
-            else{
-                childViewHolder.ChildItemTitle.setText("unknown user"); // Guest
-            }
-
-            childViewHolder.itemView.setAlpha(new Float(1));
-        }
-
-        //childViewHolder.itemView.setOnDragListener(this.onDragListener);
-
         if(mChildItemOnDropListener != null){
-            childViewHolder.itemView.setOnDragListener(new View.OnDragListener() {
+            holder.itemView.setOnDragListener(new View.OnDragListener() {
                 @Override
                 public boolean onDrag(View view, DragEvent dragEvent) {
                     switch (dragEvent.getAction()) {
@@ -188,7 +147,7 @@ public class ChildItemAdapter
         }
 
         if(mChildItemOnDoubleClickListener != null) {
-            childViewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            holder.itemView.setOnTouchListener(new View.OnTouchListener() {
 
                 long prev_clickTime = 0;
 
@@ -210,6 +169,57 @@ public class ChildItemAdapter
                 }
             });
         }
+
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(
+            @NonNull final ChildViewHolder childViewHolder,
+            final int position)
+    {
+
+        // Create an instance of the ChildItem
+        // class for the given position
+//        final ChildItem childItem
+//                = ChildItemList.get(position);
+
+        // For the created instance, set title.
+        // No need to set the image for
+        // the ImageViews because we have
+        // provided the source for the images
+        // in the layout file itself
+
+        final SlotItem slot = slotList.get(position);
+        final HashMap<String, String> playerInfo = slot.getPlayerInfo();
+
+//        final String positionTitle = Positions.get(position);
+//        final String childItem = ChildItemList.getOrDefault(positionTitle, null);
+
+        childViewHolder.ChildItemTitle.setText(slot.getTitle());
+        if(playerInfo == null){
+            childViewHolder.ChildItemPlayerName.setText(""); // empty position slot
+            childViewHolder.itemView.setAlpha(new Float(0.5));
+        }
+        else{
+            //HashMap<String, String> playerInfo = usersDatabase.getOrDefault(childItem, null);
+            HashMap<String, String> playerData = usersDatabase.getOrDefault(playerInfo.get("userID"), null);
+
+            if(playerData != null) {
+                childViewHolder.ChildItemPlayerName.setText(playerData.get("firstName")); // Registered player
+            }
+            else{
+                childViewHolder.ChildItemPlayerName.setText("unknown user"); // Guest
+            }
+
+            childViewHolder.itemView.setAlpha(new Float(1));
+        }
+
+        //childViewHolder.itemView.setOnDragListener(this.onDragListener);
+
+
+
+
 
     }
 
@@ -233,11 +243,13 @@ public class ChildItemAdapter
             extends RecyclerView.ViewHolder {
 
         TextView ChildItemTitle;
+        TextView ChildItemPlayerName;
 //        Button DeleteEntry;
 
         ChildViewHolder(View itemView)
         {
             super(itemView);
+            ChildItemPlayerName = itemView.findViewById(R.id.child_item_playerName);
             ChildItemTitle
                     = itemView.findViewById(
                     R.id.child_item_title);

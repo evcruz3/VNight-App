@@ -6,25 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/btn_editEvent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:text="Edit Event"
-        app:layout_constraintBottom_toBottomOf="@+id/btn_actionButton"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/btn_actionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="32dp"
-        android:text="Delete Event"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -217,16 +198,25 @@
 
             </androidx.recyclerview.widget.RecyclerView>
 
+            <Button
+                android:id="@+id/btn_openDrafter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Open Drafter" />
+
+            <Button
+                android:id="@+id/btn_actionButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Event" />
+
+            <Button
+                android:id="@+id/btn_editEvent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Edit Event" />
+
         </LinearLayout>
     </ScrollView>
-
-    <Button
-        android:id="@+id/btn_openDrafter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Open Drafter"
-        app:layout_constraintBottom_toTopOf="@+id/btn_editEvent"
-        app:layout_constraintEnd_toEndOf="@+id/btn_editEvent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
