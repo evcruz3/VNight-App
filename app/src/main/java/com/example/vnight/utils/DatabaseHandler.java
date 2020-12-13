@@ -70,9 +70,10 @@ public final class DatabaseHandler {
         RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(retryPolicy);
 
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-
-        queue.add(stringRequest);
+//        RequestQueue queue = Volley.newRequestQueue(ctx);
+//
+//        queue.add(stringRequest);
+        VolleyRequestQueue.getInstance(ctx).addToRequestQueue(stringRequest);
     }
 
 

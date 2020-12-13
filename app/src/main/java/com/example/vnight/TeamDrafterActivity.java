@@ -31,6 +31,7 @@ import com.example.vnight.utils.ChildItemAdapter;
 import com.example.vnight.utils.DatabaseHandler;
 import com.example.vnight.utils.ParentItemAdapter;
 import com.example.vnight.utils.ReservedPlayersAdapter;
+import com.example.vnight.utils.VolleyRequestQueue;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -291,10 +292,10 @@ public class TeamDrafterActivity
         RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         JOR.setRetryPolicy(retryPolicy);
 
-
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-
-        queue.add(JOR);
+        VolleyRequestQueue.getInstance(ctx).addToRequestQueue(JOR);
+//        RequestQueue queue = Volley.newRequestQueue(ctx);
+//
+//        queue.add(JOR);
 
 
     }

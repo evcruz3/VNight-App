@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.vnight.customClasses.UserInfo;
 import com.example.vnight.utils.DatabaseHandler;
 import com.example.vnight.utils.SharedPreferenceHandler;
+import com.example.vnight.utils.VolleyRequestQueue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -161,9 +162,10 @@ public class UserHomeActivity extends AppCompatActivity implements View.OnClickL
         RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(retryPolicy);
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        queue.add(stringRequest);
+        VolleyRequestQueue.getInstance(this).addToRequestQueue(stringRequest);
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//
+//        queue.add(stringRequest);
 
 
     }

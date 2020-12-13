@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.vnight.utils.DatabaseHandler;
 import com.example.vnight.utils.SharedPreferenceHandler;
 import com.example.vnight.utils.UsersDatabase;
+import com.example.vnight.utils.VolleyRequestQueue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -144,8 +145,10 @@ public class UsersDatabaseService extends JobService {
         RetryPolicy retryPolicy = new DefaultRetryPolicy(DatabaseHandler.socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(retryPolicy);
 
-        RequestQueue queue = Volley.newRequestQueue(ctx);
+//        RequestQueue queue = Volley.newRequestQueue(ctx);
+//
+//        queue.add(stringRequest);
 
-        queue.add(stringRequest);
+        VolleyRequestQueue.getInstance(ctx).addToRequestQueue(stringRequest);
     }
 }
