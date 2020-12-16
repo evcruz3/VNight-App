@@ -96,15 +96,22 @@ public class ChildItemAdapter
                         R.layout.child_item,
                         viewGroup, false);
 
-        ChildViewHolder holder = new ChildViewHolder(view);
-
-        final SlotItem slot = slotList.get(holder.getAdapterPosition());
-        final HashMap<String, String> playerInfo = slot.getPlayerInfo();
+        final ChildViewHolder holder = new ChildViewHolder(view);
 
         if(mChildItemOnDropListener != null){
             holder.itemView.setOnDragListener(new View.OnDragListener() {
                 @Override
                 public boolean onDrag(View view, DragEvent dragEvent) {
+                    final int pos = holder.getBindingAdapterPosition();
+
+                    if (pos == RecyclerView.NO_POSITION){
+                        notifyItemChanged(pos);
+                    }
+
+                    final SlotItem slot = slotList.get(pos);
+//                    final HashMap<String, String> playerInfo = slot.getPlayerInfo();
+
+
                     switch (dragEvent.getAction()) {
                         case DragEvent.ACTION_DRAG_ENTERED:
                             view.setBackgroundColor(Color.GREEN);
@@ -153,6 +160,17 @@ public class ChildItemAdapter
 
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                    final int pos = holder.getBindingAdapterPosition();
+
+                    if (pos == RecyclerView.NO_POSITION){
+                        notifyItemChanged(pos);
+                    }
+
+                    Log.d(TAG, "pos: " + String.valueOf(pos) + ", " + String.valueOf(holder.getAbsoluteAdapterPosition()) + ", " + String.valueOf(holder.getLayoutPosition()));
+                    final SlotItem slot = slotList.get(pos);
+                    final HashMap<String, String> playerInfo = slot.getPlayerInfo();
+
                     long timestamp = motionEvent.getEventTime();
                     long duration = timestamp - prev_clickTime;
                     //Log.d(TAG, "ActionID: " + String.valueOf(motionEvent.getAction()) + " Duration: " + String.valueOf(duration));

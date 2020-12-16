@@ -35,5 +35,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'com.jakewharton:butterknife:10.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha03'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
 }

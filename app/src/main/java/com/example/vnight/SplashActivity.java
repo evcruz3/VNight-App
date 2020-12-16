@@ -70,7 +70,7 @@ public class SplashActivity extends AppCompatActivity {
         JobInfo info = new JobInfo.Builder(1, componentName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setPersisted(true)
-                .setPeriodic(5*60*1000)
+                .setPeriodic(30*60*1000)
                 .build();
 
         JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
